@@ -659,33 +659,55 @@ function setupCustomCursor() {
     const quirks = ['Builder', 'Thinker', 'Dreamer', 'Creator', 'Innovator', 'Explorer', 'Visionary', 'Catalyst', 'Strategist', 'Tinkerer'];
     
     let currentQuirkIndex = 0;
+    let lastUpdateTime = 0;
+    const updateInterval = 10000; // 10 seconds between updates
     
-    // Update quirk every 7 seconds with smooth transitions
-    setInterval(() => {
-        currentQuirkIndex = (currentQuirkIndex + 1) % quirks.length;
-        cursorLabel.style.opacity = '0';
-        
-        setTimeout(() => {
-            cursorLabel.textContent = quirks[currentQuirkIndex];
-            cursorLabel.style.opacity = '1';
-        }, 200);
-    }, 7000);
+    // Update quirk with smooth fade transitions
+    function updateQuirk() {
+        const now = Date.now();
+        if (now - lastUpdateTime >= updateInterval) {
+            currentQuirkIndex = (currentQuirkIndex + 1) % quirks.length;
+            
+            // Fade out
+            cursorLabel.classList.add('fade-out');
+            cursorLabel.classList.remove('fade-in');
+            
+            setTimeout(() => {
+                cursorLabel.textContent = quirks[currentQuirkIndex];
+                cursorLabel.classList.remove('fade-out');
+                cursorLabel.classList.add('fade-in');
+            }, 150);
+            
+            lastUpdateTime = now;
+        }
+    }
     
-    // Real-time cursor following without lag
+    // Update quirk every 10 seconds
+    setInterval(updateQuirk, updateInterval);
+    
+    // Real-time cursor following with improved performance
+    let animationId;
     document.addEventListener('mousemove', (e) => {
-        // Direct positioning without interpolation for snappy response
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
+        // Cancel previous animation frame for smoother movement
+        cancelAnimationFrame(animationId);
+        
+        animationId = requestAnimationFrame(() => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
     });
     
-    // Hide cursor on elements that shouldn't show it
+    // Hide cursor on interactive elements
     document.addEventListener('mouseover', (e) => {
-        if (e.target.closest('.sticky-note') || e.target.closest('.nav-item') || e.target.closest('.side-toggle')) {
+        if (e.target.closest('.sticky-note') || e.target.closest('.nav-item') || e.target.closest('.side-toggle') || e.target.closest('.project-box')) {
             cursor.style.opacity = '0';
         } else {
             cursor.style.opacity = '1';
         }
     });
+    
+    // Initialize first quirk
+    cursorLabel.classList.add('fade-in');
 }
 
 // Setup sticky note positions to avoid overlap with intro text
