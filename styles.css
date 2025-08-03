@@ -1,0 +1,886 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f8f9fa;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    cursor: none; /* Hide default cursor for custom cursor */
+}
+
+/* Custom Cursor */
+.custom-cursor {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10000;
+    transition: opacity 0.3s ease;
+}
+
+.cursor-pointer {
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 12px solid rgba(0, 0, 0, 0.9);
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+    z-index: 2;
+}
+
+.cursor-label {
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    transform: rotate(45deg);
+    transform-origin: top left;
+    transition: opacity 0.2s ease;
+    z-index: 1;
+}
+
+@keyframes cursorFloat {
+    0%, 100% { 
+        transform: rotate(45deg) translateY(0px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    50% { 
+        transform: rotate(45deg) translateY(-1px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    }
+}
+
+/* FigJam-Style Grid Background */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center center;
+    z-index: -2;
+}
+
+/* Radial fade effect for grid */
+body::after {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(ellipse at center, transparent 0%, transparent 30%, rgba(248, 249, 250, 0.8) 70%, rgba(248, 249, 250, 1) 100%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Convex lens effect */
+.canvas::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80vw;
+    height: 80vh;
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Top Bar */
+.top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.top-left {
+    font-weight: 600;
+    flex: 1;
+}
+
+.top-center {
+    font-family: 'Inter', sans-serif;
+    color: #333;
+    text-align: center;
+    flex: 2;
+    font-weight: 500;
+}
+
+.top-right {
+    font-family: 'Courier New', monospace;
+    color: #666;
+    text-align: right;
+    flex: 1;
+}
+
+/* Main Canvas */
+.canvas {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    padding-top: 40px;
+    padding-bottom: 100px; /* Increased to prevent content behind nav */
+    overflow: hidden;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Page Content */
+.page-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    overflow-y: auto; /* Enable scrolling */
+    padding: 60px 20px 120px 20px; /* Top padding for breathing room, bottom padding for nav */
+}
+
+.page-content.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+/* Central Introduction Text */
+.intro-section {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    max-width: 600px;
+    padding: 0 20px;
+    animation: fadeInUp 1s ease-out 0.3s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -40%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+.intro-title {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #333;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+}
+
+.intro-subtitle {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #666;
+    line-height: 1.4;
+    margin-bottom: 2rem;
+    letter-spacing: -0.01em;
+}
+
+.intro-description {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: #888;
+    line-height: 1.6;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Enhanced Sticky Notes */
+.sticky-note {
+    position: absolute;
+    width: 220px;
+    min-height: 160px;
+    padding: 18px;
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    cursor: grab;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: rotate(-1deg);
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    z-index: 10;
+    user-select: none;
+    animation: stickyNoteEntrance 0.8s ease-out both;
+}
+
+.sticky-note:nth-child(1) { animation-delay: 0.1s; }
+.sticky-note:nth-child(2) { animation-delay: 0.2s; }
+.sticky-note:nth-child(3) { animation-delay: 0.3s; }
+.sticky-note:nth-child(4) { animation-delay: 0.4s; }
+.sticky-note:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes stickyNoteEntrance {
+    from {
+        opacity: 0;
+        transform: rotate(-1deg) scale(0.8) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: rotate(-1deg) scale(1) translateY(0);
+    }
+}
+
+.sticky-note:active {
+    cursor: grabbing;
+}
+
+.sticky-note:hover {
+    transform: rotate(0deg) scale(1.05);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    z-index: 20;
+}
+
+.sticky-note::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 8px 8px 0 0;
+}
+
+.note-content h3 {
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.note-content p {
+    color: #555;
+    font-size: 13px;
+}
+
+/* Work vs Personal Side - Proper Visibility Management */
+.work-note {
+    opacity: 1;
+    transform: rotate(-1deg);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    display: block;
+}
+
+.personal-note {
+    opacity: 0;
+    transform: rotate(1deg) scale(0.8);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    display: none;
+}
+
+.canvas.personal-mode .work-note {
+    opacity: 0;
+    transform: rotate(-1deg) scale(0.8);
+    display: none;
+}
+
+.canvas.personal-mode .personal-note {
+    opacity: 1;
+    transform: rotate(1deg) scale(1);
+    display: block;
+}
+
+/* TV Sticky Note */
+.tv-note {
+    width: 280px;
+    min-height: 200px;
+    background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(44, 62, 80, 0.4);
+    position: relative;
+    overflow: visible;
+}
+
+.tv-note::before {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px 15px 0 0;
+}
+
+.tv-screen {
+    background: #1a1a1a;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #444;
+}
+
+.tv-static {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255, 255, 255, 0.03) 2px,
+        rgba(255, 255, 255, 0.03) 4px
+    );
+    animation: tvFlicker 0.1s infinite;
+    pointer-events: none;
+}
+
+@keyframes tvFlicker {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.1; }
+}
+
+.tv-content h3 {
+    color: #fff;
+    font-size: 18px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.tv-content p {
+    color: #ccc;
+    text-align: center;
+    font-size: 14px;
+}
+
+.tv-antenna {
+    position: absolute;
+    top: -15px;
+    width: 2px;
+    height: 20px;
+    background: #666;
+    border-radius: 1px;
+}
+
+.tv-antenna.left {
+    left: 30px;
+    transform: rotate(-15deg);
+}
+
+.tv-antenna.right {
+    right: 30px;
+    transform: rotate(15deg);
+}
+
+.tv-antenna::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -1px;
+    width: 4px;
+    height: 4px;
+    background: #999;
+    border-radius: 50%;
+}
+
+/* Spotify-Style Music Player Sticky Note */
+.music-player-note {
+    width: 280px;
+    min-height: 120px;
+    background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(29, 185, 84, 0.3);
+}
+
+.music-player-note::before {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px 12px 0 0;
+}
+
+.music-player-note .note-content h3 {
+    color: white;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.music-player-note .note-content p {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.music-player-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.album-cover {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.song-info {
+    flex: 1;
+}
+
+.song-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: white;
+}
+
+.artist-name {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.music-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.music-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: white;
+    font-size: 14px;
+}
+
+.music-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+/* Enhanced Side Toggle Button */
+.side-toggle {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.side-toggle:hover {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.work-toggle {
+    right: 20px;
+}
+
+.personal-toggle {
+    left: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.canvas.personal-mode .work-toggle {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.canvas.personal-mode .personal-toggle {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Navigation Menu */
+.nav-menu {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 12px 20px;
+    border-radius: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.nav-item {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 15px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.nav-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #333;
+    transform: translateY(-1px);
+}
+
+.nav-item.active {
+    background: #333;
+    color: white;
+}
+
+/* Page-specific content */
+.about-content, .works-content, .resume-content, .naytv-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Inter', sans-serif;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.page-description {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+/* Works Page Specific Styles */
+.works-header {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.email-link {
+    color: #333;
+    text-decoration: underline;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.email-link:hover {
+    color: #666;
+}
+
+/* New Project Grid Layout */
+.project-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+.project-box {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    min-height: 200px;
+}
+
+.project-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.project-image {
+    flex-shrink: 0;
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.image-placeholder {
+    font-size: 3rem;
+    color: white;
+}
+
+.project-description {
+    flex: 1;
+}
+
+.project-description h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.project-description p {
+    color: #666;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+/* Legacy Project Grid (keeping for other pages if needed) */
+.project-grid-legacy {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.project-item {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.project-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.project-item h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.project-item p {
+    color: #666;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* Content styling */
+.about-content p, .works-content p, .resume-content p, .naytv-content p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.about-content h3, .works-content h3, .resume-content h3, .naytv-content h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+    margin: 2rem 0 1rem 0;
+}
+
+.about-content ul, .works-content ul, .resume-content ul, .naytv-content ul {
+    margin: 1rem 0;
+    padding-left: 2rem;
+}
+
+.about-content li, .works-content li, .resume-content li, .naytv-content li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.about-content a, .works-content a, .resume-content a, .naytv-content a {
+    color: #333;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+}
+
+.about-content a:hover, .works-content a:hover, .resume-content a:hover, .naytv-content a:hover {
+    color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .intro-title {
+        font-size: 2.5rem;
+    }
+    
+    .intro-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .intro-description {
+        font-size: 1rem;
+    }
+    
+    .sticky-note {
+        width: 180px;
+        min-height: 140px;
+        padding: 15px;
+    }
+    
+    .music-player-note {
+        width: 240px;
+        min-height: 100px;
+    }
+    
+    .tv-note {
+        width: 240px;
+        min-height: 180px;
+    }
+    
+    .nav-menu {
+        bottom: 10px;
+        padding: 10px 15px;
+    }
+    
+    .nav-item {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+    
+    .side-toggle {
+        padding: 12px 16px;
+        font-size: 13px;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+    }
+    
+    .top-center {
+        font-size: 12px;
+    }
+    
+    .top-right {
+        font-size: 11px;
+    }
+    
+    /* Works page responsive */
+    .works-header {
+        font-size: 1rem;
+        padding: 0 10px;
+    }
+    
+    .project-box {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+        gap: 1rem;
+    }
+    
+    .project-image {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .image-placeholder {
+        font-size: 2.5rem;
+    }
+    
+    .project-description h3 {
+        font-size: 1.2rem;
+    }
+    
+    .project-description p {
+        font-size: 0.9rem;
+    }
+    
+    .page-content {
+        padding: 50px 15px 100px 15px;
+    }
+}
+
+/* Enhanced dragging styles */
+.sticky-note.dragging {
+    opacity: 0.9;
+    transform: rotate(0deg) scale(1.05);
+    z-index: 1000;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transition: none;
+}
+
+/* Show default cursor on interactive elements */
+.sticky-note, .nav-item, .side-toggle {
+    cursor: grab;
+}
+
+.sticky-note:active, .nav-item:active, .side-toggle:active {
+    cursor: grabbing;
+} 
