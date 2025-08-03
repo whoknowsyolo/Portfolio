@@ -92,7 +92,413 @@ function navigateToProjectDetail(projectId) {
     currentPage = 'projectDetail';
     
     // Update page title
-    document.title = `Project - ${projectId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())} - Aman Sinha`;
+    let projectTitle = '';
+    if (projectId === 'syncin') {
+        projectTitle = 'Syncin: Innovating Event Management and Engagement';
+    } else {
+        projectTitle = projectId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+    document.title = `Project - ${projectTitle} - Aman Sinha`;
+    
+    // Load project content
+    loadProjectContent(projectId);
+}
+
+// Load project content based on project ID
+function loadProjectContent(projectId) {
+    const embedContainer = document.querySelector('.project-embed-container');
+    
+    if (projectId === 'syncin') {
+        // Load Syncin case study with enhanced functionality
+        embedContainer.innerHTML = `
+            <div class="syncin-case-study" id="syncinCaseStudy">
+                <!-- Sticky Header Bar -->
+                <div class="syncin-header-bar">
+                    <div class="macos-controls">
+                        <div class="control-btn red"></div>
+                        <div class="control-btn yellow"></div>
+                        <div class="control-btn green"></div>
+                    </div>
+                    <div class="syncin-controls">
+                        <div class="video-buttons">
+                            <a href="https://youtu.be/PcAVUDy6rss" target="_blank" class="video-btn">
+                                🎥 Domain Video
+                            </a>
+                            <a href="https://youtu.be/QpjhAR3kuS8" target="_blank" class="video-btn">
+                                🎬 PoC Video
+                            </a>
+                        </div>
+                        <div class="zoom-controls">
+                            <button class="zoom-btn" onclick="zoomOut()">−</button>
+                            <span class="zoom-level">50%</span>
+                            <button class="zoom-btn" onclick="zoomIn()">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Image Container -->
+                <div class="syncin-image-container" id="syncinImageContainer">
+                    <img 
+                        src="PDFs/syncinimage.png" 
+                        alt="Syncin Project Case Study" 
+                        class="syncin-detail-image"
+                        id="syncinImage"
+                    >
+                </div>
+            </div>
+        `;
+        
+        // Initialize enhanced zoom functionality
+        initializeEnhancedZoom();
+    } else {
+        // Default placeholder for other projects
+        embedContainer.innerHTML = `
+            <div class="project-embed-placeholder">
+                <h2>Project Detail</h2>
+                <p>This space is ready for your PDF or case study image.</p>
+                <p>Click on any project from the Works page to view its details.</p>
+            </div>
+        `;
+    }
+}
+
+// Enhanced zoom functionality with proper centering and scrolling
+let currentZoom = 0.5; // Default 50% zoom
+const zoomStep = 0.25;
+const minZoom = 0.3; // Minimum 30% zoom to prevent image from becoming too small
+const maxZoom = 3;
+let isDragging = false;
+let lastMouseX = 0;
+let lastMouseY = 0;
+let scrollLeft = 0;
+let scrollTop = 0;
+
+function initializeEnhancedZoom() {
+    const imageContainer = document.getElementById('syncinImageContainer');
+    const image = document.getElementById('syncinImage');
+    
+    if (!imageContainer || !image) return;
+    
+    // Set initial zoom to 50% and update button states
+    setEnhancedZoom(0.5);
+    updateZoomButtonStates(0.5);
+    
+    // Mouse wheel zoom with Ctrl/Cmd
+    imageContainer.addEventListener('wheel', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            const rect = imageContainer.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            if (e.deltaY < 0) {
+                zoomInAtPoint(mouseX, mouseY);
+            } else {
+                zoomOutAtPoint(mouseX, mouseY);
+            }
+        }
+    });
+    
+    // Touch pinch zoom
+    let initialDistance = 0;
+    let initialZoom = 0.5;
+    let initialCenterX = 0;
+    let initialCenterY = 0;
+    
+    imageContainer.addEventListener('touchstart', function(e) {
+        if (e.touches.length === 2) {
+            initialDistance = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            initialZoom = currentZoom;
+            
+            const rect = imageContainer.getBoundingClientRect();
+            initialCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+            initialCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+        }
+    });
+    
+    imageContainer.addEventListener('touchmove', function(e) {
+        if (e.touches.length === 2) {
+            e.preventDefault();
+            const currentDistance = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            
+            const scale = currentDistance / initialDistance;
+            const newZoom = Math.max(minZoom, Math.min(maxZoom, initialZoom * scale));
+            
+            const rect = imageContainer.getBoundingClientRect();
+            const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+            const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+            
+            setEnhancedZoomAtPoint(newZoom, centerX, centerY);
+        }
+    });
+    
+    // Mouse drag for panning when zoomed
+    imageContainer.addEventListener('mousedown', function(e) {
+        if (currentZoom > 1) {
+            isDragging = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+            scrollLeft = imageContainer.scrollLeft;
+            scrollTop = imageContainer.scrollTop;
+            imageContainer.style.cursor = 'grabbing';
+            e.preventDefault();
+        }
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+        if (isDragging) {
+            const deltaX = e.clientX - lastMouseX;
+            const deltaY = e.clientY - lastMouseY;
+            
+            imageContainer.scrollLeft = scrollLeft - deltaX;
+            imageContainer.scrollTop = scrollTop - deltaY;
+        }
+    });
+    
+    document.addEventListener('mouseup', function() {
+        if (isDragging) {
+            isDragging = false;
+            imageContainer.style.cursor = currentZoom > 1 ? 'grab' : 'zoom-in';
+        }
+    });
+    
+    // Update cursor based on zoom level
+    imageContainer.addEventListener('mouseenter', function() {
+        imageContainer.style.cursor = currentZoom > 1 ? 'grab' : 'zoom-in';
+    });
+}
+
+function zoomInAtPoint(mouseX, mouseY) {
+    const newZoom = Math.min(maxZoom, currentZoom + zoomStep);
+    
+    // Add visual feedback when reaching maximum zoom
+    if (newZoom === maxZoom && currentZoom < maxZoom) {
+        const zoomBtn = document.querySelector('.zoom-btn:last-of-type');
+        if (zoomBtn) {
+            zoomBtn.style.opacity = '0.5';
+            setTimeout(() => {
+                zoomBtn.style.opacity = '1';
+            }, 200);
+        }
+    }
+    
+    setEnhancedZoomAtPoint(newZoom, mouseX, mouseY);
+}
+
+function zoomOutAtPoint(mouseX, mouseY) {
+    const newZoom = Math.max(minZoom, currentZoom - zoomStep);
+    
+    // Add visual feedback when reaching minimum zoom
+    if (newZoom === minZoom && currentZoom > minZoom) {
+        const zoomBtn = document.querySelector('.zoom-btn:first-of-type');
+        if (zoomBtn) {
+            zoomBtn.style.opacity = '0.5';
+            setTimeout(() => {
+                zoomBtn.style.opacity = '1';
+            }, 200);
+        }
+    }
+    
+    setEnhancedZoomAtPoint(newZoom, mouseX, mouseY);
+}
+
+function setEnhancedZoomAtPoint(zoom, centerX, centerY) {
+    const imageContainer = document.getElementById('syncinImageContainer');
+    const image = document.getElementById('syncinImage');
+    const zoomLevel = document.querySelector('.zoom-level');
+    
+    if (!image || !imageContainer) return;
+    
+    // Ensure zoom is within bounds
+    const clampedZoom = Math.max(minZoom, Math.min(maxZoom, zoom));
+    
+    const oldZoom = currentZoom;
+    currentZoom = clampedZoom;
+    
+    // Calculate the scroll position to keep the zoom center point
+    const containerRect = imageContainer.getBoundingClientRect();
+    const imageRect = image.getBoundingClientRect();
+    
+    // Calculate the new scroll position
+    const scaleRatio = clampedZoom / oldZoom;
+    const newScrollLeft = (centerX + imageContainer.scrollLeft) * scaleRatio - centerX;
+    const newScrollTop = (centerY + imageContainer.scrollTop) * scaleRatio - centerY;
+    
+    // Apply zoom with center origin for better alignment
+    image.style.transform = `scale(${clampedZoom})`;
+    image.style.transformOrigin = 'center center';
+    
+    // Smooth scroll to new position
+    imageContainer.scrollTo({
+        left: Math.max(0, newScrollLeft),
+        top: Math.max(0, newScrollTop),
+        behavior: 'smooth'
+    });
+    
+    // Update zoom level display
+    if (zoomLevel) {
+        zoomLevel.textContent = `${Math.round(clampedZoom * 100)}%`;
+    }
+    
+    // Update cursor based on zoom level
+    imageContainer.style.cursor = clampedZoom > 1 ? 'grab' : 'zoom-in';
+    
+    // Update zoom button states
+    updateZoomButtonStates(clampedZoom);
+    
+    // Prevent scrolling beyond content bounds and ensure centering
+    setTimeout(() => {
+        constrainScrollToContent();
+        ensureImageCentering();
+    }, 100);
+}
+
+function setEnhancedZoom(zoom) {
+    const image = document.getElementById('syncinImage');
+    const imageContainer = document.getElementById('syncinImageContainer');
+    const zoomLevel = document.querySelector('.zoom-level');
+    
+    if (!image || !imageContainer) return;
+    
+    // Ensure zoom is within bounds
+    const clampedZoom = Math.max(minZoom, Math.min(maxZoom, zoom));
+    currentZoom = clampedZoom;
+    
+    // Apply zoom with center origin
+    image.style.transform = `scale(${clampedZoom})`;
+    image.style.transformOrigin = 'center center';
+    
+    // Update zoom level display
+    if (zoomLevel) {
+        zoomLevel.textContent = `${Math.round(clampedZoom * 100)}%`;
+    }
+    
+    // Update cursor
+    imageContainer.style.cursor = clampedZoom > 1 ? 'grab' : 'zoom-in';
+    
+    // Update zoom button states
+    updateZoomButtonStates(clampedZoom);
+    
+    // Center the image when zooming
+    setTimeout(() => {
+        centerImageInContainer();
+        constrainScrollToContent();
+        ensureImageCentering();
+    }, 100);
+}
+
+function centerImageInContainer() {
+    const imageContainer = document.getElementById('syncinImageContainer');
+    const image = document.getElementById('syncinImage');
+    
+    if (!imageContainer || !image) return;
+    
+    const containerRect = imageContainer.getBoundingClientRect();
+    const imageRect = image.getBoundingClientRect();
+    
+    // Calculate center position
+    const centerX = (containerRect.width - imageRect.width) / 2;
+    const centerY = (containerRect.height - imageRect.height) / 2;
+    
+    // Scroll to center
+    imageContainer.scrollTo({
+        left: Math.max(0, centerX),
+        top: Math.max(0, centerY),
+        behavior: 'smooth'
+    });
+}
+
+function constrainScrollToContent() {
+    const imageContainer = document.getElementById('syncinImageContainer');
+    const image = document.getElementById('syncinImage');
+    
+    if (!imageContainer || !image) return;
+    
+    const containerRect = imageContainer.getBoundingClientRect();
+    const imageRect = image.getBoundingClientRect();
+    
+    // Calculate bounds
+    const maxScrollLeft = Math.max(0, imageRect.width - containerRect.width);
+    const maxScrollTop = Math.max(0, imageRect.height - containerRect.height);
+    
+    // Constrain scroll position
+    if (imageContainer.scrollLeft > maxScrollLeft) {
+        imageContainer.scrollLeft = maxScrollLeft;
+    }
+    if (imageContainer.scrollTop > maxScrollTop) {
+        imageContainer.scrollTop = maxScrollTop;
+    }
+    if (imageContainer.scrollLeft < 0) {
+        imageContainer.scrollLeft = 0;
+    }
+    if (imageContainer.scrollTop < 0) {
+        imageContainer.scrollTop = 0;
+    }
+}
+
+function updateZoomButtonStates(zoom) {
+    const zoomOutBtn = document.querySelector('.zoom-btn:first-of-type');
+    const zoomInBtn = document.querySelector('.zoom-btn:last-of-type');
+    
+    if (zoomOutBtn) {
+        zoomOutBtn.style.opacity = zoom <= minZoom ? '0.5' : '1';
+        zoomOutBtn.style.cursor = zoom <= minZoom ? 'not-allowed' : 'pointer';
+    }
+    
+    if (zoomInBtn) {
+        zoomInBtn.style.opacity = zoom >= maxZoom ? '0.5' : '1';
+        zoomInBtn.style.cursor = zoom >= maxZoom ? 'not-allowed' : 'pointer';
+    }
+}
+
+function ensureImageCentering() {
+    const imageContainer = document.getElementById('syncinImageContainer');
+    const image = document.getElementById('syncinImage');
+    
+    if (!imageContainer || !image) return;
+    
+    const containerRect = imageContainer.getBoundingClientRect();
+    const imageRect = image.getBoundingClientRect();
+    
+    // If image is smaller than container, center it
+    if (imageRect.width <= containerRect.width && imageRect.height <= containerRect.height) {
+        const centerX = Math.max(0, (containerRect.width - imageRect.width) / 2);
+        const centerY = Math.max(0, (containerRect.height - imageRect.height) / 2);
+        
+        imageContainer.scrollTo({
+            left: centerX,
+            top: centerY,
+            behavior: 'smooth'
+        });
+    }
+}
+
+function zoomIn() {
+    const imageContainer = document.getElementById('syncinImageContainer');
+    if (!imageContainer) return;
+    
+    const rect = imageContainer.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    zoomInAtPoint(centerX, centerY);
+}
+
+function zoomOut() {
+    const imageContainer = document.getElementById('syncinImageContainer');
+    if (!imageContainer) return;
+    
+    const rect = imageContainer.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    zoomOutAtPoint(centerX, centerY);
 }
 
 // Go back to works page

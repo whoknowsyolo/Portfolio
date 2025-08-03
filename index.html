@@ -133,13 +133,18 @@
                 </p>
                 
                 <div class="project-grid">
-                    <div class="project-box" data-project="mobile-app">
+                    <div class="project-box" data-project="syncin">
                         <div class="project-image">
-                            <div class="image-placeholder">📱</div>
+                            <img src="Images/Screenshot 2025-08-04 033740.png" alt="Syncin Project" class="project-thumbnail">
                         </div>
                         <div class="project-overlay">
-                            <h3>Mobile App Development</h3>
-                            <p>Cross-platform mobile application with real-time data sync</p>
+                            <h3>Syncin: Innovating Event Management and Engagement</h3>
+                            <div class="project-tags">
+                                <span class="tag">Systems Design</span>
+                                <span class="tag">Interaction Design</span>
+                                <span class="tag">Physical Computing</span>
+                                <span class="tag">Research</span>
+                            </div>
                         </div>
                     </div>
                     
@@ -202,11 +207,41 @@
                 <button class="back-button" onclick="goBackToWorks()">
                     ← Back to Works
                 </button>
-                <div class="project-embed-container">
-                    <div class="project-embed-placeholder">
-                        <h2>Project Detail</h2>
-                        <p>This space is ready for your PDF or case study image.</p>
-                        <p>Click on any project from the Works page to view its details.</p>
+                
+                <!-- Syncin Case Study Container -->
+                <div class="syncin-case-study" id="syncinCaseStudy">
+                    <!-- Sticky Header Bar -->
+                    <div class="syncin-header-bar">
+                        <div class="macos-controls">
+                            <div class="control-btn red"></div>
+                            <div class="control-btn yellow"></div>
+                            <div class="control-btn green"></div>
+                        </div>
+                        <div class="syncin-controls">
+                            <div class="video-buttons">
+                                <a href="https://youtu.be/PcAVUDy6rss" target="_blank" class="video-btn">
+                                    🎥 Domain Video
+                                </a>
+                                <a href="https://youtu.be/QpjhAR3kuS8" target="_blank" class="video-btn">
+                                    🎬 PoC Video
+                                </a>
+                            </div>
+                            <div class="zoom-controls">
+                                <button class="zoom-btn" onclick="zoomOut()">−</button>
+                                <span class="zoom-level">50%</span>
+                                <button class="zoom-btn" onclick="zoomIn()">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Image Container -->
+                    <div class="syncin-image-container" id="syncinImageContainer">
+                        <img 
+                            src="PDFs/syncinimage.png" 
+                            alt="Syncin Project Case Study" 
+                            class="syncin-detail-image"
+                            id="syncinImage"
+                        >
                     </div>
                 </div>
             </div>
