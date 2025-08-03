@@ -11,7 +11,8 @@ const pages = {
     about: document.getElementById('aboutPage'),
     works: document.getElementById('worksPage'),
     resume: document.getElementById('resumePage'),
-    naytv: document.getElementById('naytvPage')
+    naytv: document.getElementById('naytvPage'),
+    projectDetail: document.getElementById('projectDetailPage')
 };
 
 // State
@@ -41,6 +42,11 @@ function setupEventListeners() {
         item.addEventListener('click', handleNavClick);
     });
 
+    // Project box clicks
+    document.querySelectorAll('.project-box').forEach(box => {
+        box.addEventListener('click', handleProjectClick);
+    });
+
     // Music player controls
     const playPauseBtn = document.getElementById('playPauseBtn');
     const nextBtn = document.getElementById('nextBtn');
@@ -58,6 +64,40 @@ function setupEventListeners() {
             nextSong();
         });
     }
+}
+
+// Handle project box clicks
+function handleProjectClick(e) {
+    const projectId = e.currentTarget.dataset.project;
+    navigateToProjectDetail(projectId);
+}
+
+// Navigate to project detail page
+function navigateToProjectDetail(projectId) {
+    // Hide current page
+    if (pages[currentPage]) {
+        pages[currentPage].classList.remove('active');
+    }
+    
+    // Show project detail page
+    if (pages.projectDetail) {
+        pages.projectDetail.classList.add('active');
+    }
+    
+    // Update navigation state
+    navItems.forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    currentPage = 'projectDetail';
+    
+    // Update page title
+    document.title = `Project - ${projectId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())} - Aman Sinha`;
+}
+
+// Go back to works page
+function goBackToWorks() {
+    navigateToPage('works');
 }
 
 // Handle navigation clicks
@@ -170,20 +210,20 @@ function nextSong() {
     // You can implement a playlist system here
 }
 
-// Update greeting message and static date
+// Update greeting message and static date with new time ranges
 function updateGreetingAndDate() {
     const now = new Date();
     const hour = now.getHours();
     let greeting = '';
     
-    if (hour < 12) {
-        greeting = "🌞 Good morning, dreamer!";
-    } else if (hour < 16) {
-        greeting = "☀️ Good afternoon, creator!";
-    } else if (hour < 20) {
-        greeting = "🌇 Good evening, innovator!";
+    if (hour >= 6 && hour < 12) {
+        greeting = "🌞 Good morning";
+    } else if (hour >= 12 && hour < 16) {
+        greeting = "☀️ Good afternoon";
+    } else if (hour >= 16 && hour < 20) {
+        greeting = "🌇 Good evening";
     } else {
-        greeting = "🌙 Burning the midnight oil, huh?";
+        greeting = "🌙 Aren't you a night owl?";
     }
     
     // Update the greeting in the center

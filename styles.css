@@ -627,7 +627,7 @@ body::after {
     font-size: 1.1rem;
     color: #666;
     line-height: 1.6;
-    margin-bottom: 1.5rem;
+    margin-bottom: 3rem;
     text-align: center;
     max-width: 800px;
     margin-left: auto;
@@ -645,12 +645,15 @@ body::after {
     color: #666;
 }
 
-/* New Project Grid Layout */
+/* New 2-Column Project Grid Layout */
 .project-grid {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
     margin: 3rem 0;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .project-box {
@@ -658,13 +661,12 @@ body::after {
     backdrop-filter: blur(10px);
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 16px;
-    padding: 2rem;
+    overflow: hidden;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    min-height: 200px;
+    position: relative;
+    min-height: 400px;
+    cursor: pointer;
 }
 
 .project-box:hover {
@@ -673,37 +675,102 @@ body::after {
 }
 
 .project-image {
-    flex-shrink: 0;
-    width: 120px;
-    height: 120px;
-    border-radius: 12px;
+    width: 100%;
+    height: 300px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    position: relative;
 }
 
 .image-placeholder {
-    font-size: 3rem;
+    font-size: 4rem;
     color: white;
 }
 
-.project-description {
-    flex: 1;
+.project-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.project-description h3 {
-    font-size: 1.4rem;
+.project-overlay h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.project-overlay p {
+    color: #666;
+    line-height: 1.4;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Project Detail Page Styles */
+.project-detail-content {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.back-button {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.project-embed-container {
+    width: 100%;
+    min-height: 80vh;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.project-embed-placeholder {
+    text-align: center;
+    color: #666;
+    padding: 4rem 2rem;
+}
+
+.project-embed-placeholder h2 {
+    font-size: 2rem;
     font-weight: 600;
     color: #333;
     margin-bottom: 1rem;
 }
 
-.project-description p {
-    color: #666;
+.project-embed-placeholder p {
+    font-size: 1.1rem;
     line-height: 1.6;
-    font-size: 1rem;
+    margin-bottom: 1rem;
 }
 
 /* Legacy Project Grid (keeping for other pages if needed) */
@@ -836,30 +903,65 @@ body::after {
     .works-header {
         font-size: 1rem;
         padding: 0 10px;
+        margin-bottom: 2rem;
+    }
+    
+    .project-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 0 10px;
     }
     
     .project-box {
-        flex-direction: column;
-        text-align: center;
-        padding: 1.5rem;
-        gap: 1rem;
+        min-height: 300px;
     }
     
     .project-image {
-        width: 100px;
-        height: 100px;
+        height: 200px;
     }
     
     .image-placeholder {
-        font-size: 2.5rem;
+        font-size: 3rem;
     }
     
-    .project-description h3 {
-        font-size: 1.2rem;
+    .project-overlay {
+        padding: 1rem;
     }
     
-    .project-description p {
-        font-size: 0.9rem;
+    .project-overlay h3 {
+        font-size: 1.1rem;
+    }
+    
+    .project-overlay p {
+        font-size: 0.8rem;
+    }
+    
+    /* Project detail page responsive */
+    .project-detail-content {
+        padding: 0 15px;
+    }
+    
+    .back-button {
+        padding: 10px 16px;
+        font-size: 13px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .project-embed-container {
+        padding: 1.5rem;
+        min-height: 60vh;
+    }
+    
+    .project-embed-placeholder {
+        padding: 2rem 1rem;
+    }
+    
+    .project-embed-placeholder h2 {
+        font-size: 1.5rem;
+    }
+    
+    .project-embed-placeholder p {
+        font-size: 1rem;
     }
     
     .page-content {

@@ -129,71 +129,84 @@
             <div class="works-content">
                 <h1 class="page-title">My Works</h1>
                 <p class="works-header">
-                    You won't find all my projects here—some stories are just better shared over coffee (and I'm definitely all ears for your football hot takes too). If you're curious, just say hey—I'll take that as my cue to grab a cappuccino and hit reply 👀
-                </p>
-                <p class="works-header">
-                    Use <a href="mailto:amansinha5036@gmail.com" class="email-link">Just say hey</a>
+                    You won't find all my projects here—some stories are just better shared over coffee (and I'm definitely all ears for your football hot takes too). If you're curious, just <a href="mailto:amansinha5036@gmail.com" class="email-link">say hey</a> —I'll take that as my cue to grab a cappuccino and hit reply 👀
                 </p>
                 
                 <div class="project-grid">
-                    <div class="project-box">
+                    <div class="project-box" data-project="mobile-app">
                         <div class="project-image">
                             <div class="image-placeholder">📱</div>
                         </div>
-                        <div class="project-description">
+                        <div class="project-overlay">
                             <h3>Mobile App Development</h3>
-                            <p>A cross-platform mobile application built with React Native, featuring real-time data synchronization and intuitive user interface design.</p>
+                            <p>Cross-platform mobile application with real-time data sync</p>
                         </div>
                     </div>
                     
-                    <div class="project-box">
+                    <div class="project-box" data-project="web-platform">
                         <div class="project-image">
                             <div class="image-placeholder">🌐</div>
                         </div>
-                        <div class="project-description">
+                        <div class="project-overlay">
                             <h3>Web Platform</h3>
-                            <p>Full-stack web application with modern architecture, responsive design, and seamless user experience across all devices.</p>
+                            <p>Full-stack web application with modern architecture</p>
                         </div>
                     </div>
                     
-                    <div class="project-box">
+                    <div class="project-box" data-project="design-system">
                         <div class="project-image">
                             <div class="image-placeholder">🎨</div>
                         </div>
-                        <div class="project-description">
+                        <div class="project-overlay">
                             <h3>Design System</h3>
-                            <p>Comprehensive design system and component library that ensures consistency and accelerates development across multiple projects.</p>
+                            <p>Comprehensive design system and component library</p>
                         </div>
                     </div>
                     
-                    <div class="project-box">
+                    <div class="project-box" data-project="analytics">
                         <div class="project-image">
                             <div class="image-placeholder">📊</div>
                         </div>
-                        <div class="project-description">
+                        <div class="project-overlay">
                             <h3>Data Analytics Dashboard</h3>
-                            <p>Interactive dashboard for data visualization and analytics, providing insights through intuitive charts and real-time metrics.</p>
+                            <p>Interactive dashboard for data visualization</p>
                         </div>
                     </div>
                     
-                    <div class="project-box">
+                    <div class="project-box" data-project="ai-integration">
                         <div class="project-image">
                             <div class="image-placeholder">🤖</div>
                         </div>
-                        <div class="project-description">
+                        <div class="project-overlay">
                             <h3>AI Integration</h3>
-                            <p>Machine learning integration for intelligent automation and predictive analytics in enterprise applications.</p>
+                            <p>Machine learning integration for automation</p>
                         </div>
                     </div>
                     
-                    <div class="project-box">
+                    <div class="project-box" data-project="security">
                         <div class="project-image">
                             <div class="image-placeholder">🔒</div>
                         </div>
-                        <div class="project-description">
+                        <div class="project-overlay">
                             <h3>Security Framework</h3>
-                            <p>Robust security implementation with authentication, authorization, and data protection measures for enterprise applications.</p>
+                            <p>Robust security implementation for enterprise</p>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Detail Page -->
+        <div class="page-content" id="projectDetailPage">
+            <div class="project-detail-content">
+                <button class="back-button" onclick="goBackToWorks()">
+                    ← Back to Works
+                </button>
+                <div class="project-embed-container">
+                    <div class="project-embed-placeholder">
+                        <h2>Project Detail</h2>
+                        <p>This space is ready for your PDF or case study image.</p>
+                        <p>Click on any project from the Works page to view its details.</p>
                     </div>
                 </div>
             </div>
