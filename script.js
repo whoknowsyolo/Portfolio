@@ -658,15 +658,33 @@ function setupCustomCursor() {
     const cursorLabel = cursor.querySelector('.cursor-label');
     const quirks = ['Builder', 'Thinker', 'Dreamer', 'Creator', 'Innovator', 'Explorer', 'Visionary', 'Catalyst', 'Strategist', 'Tinkerer'];
     
-    let currentQuirkIndex = 0;
-    let lastUpdateTime = 0;
-    const updateInterval = 10000; // 10 seconds between updates
+    // FigJam color palette
+    const figjamColors = [
+        '#00C781', // Green (initial)
+        '#72CCFF', // Sky blue
+        '#FF6699', // Hot pink
+        '#C17DFF', // Purple
+        '#FFEB38', // Yellow
+        '#FFAA4C'  // Orange
+    ];
     
-    // Update quirk with smooth fade transitions
-    function updateQuirk() {
+    let currentQuirkIndex = 0;
+    let currentColorIndex = 0;
+    let lastUpdateTime = 0;
+    const updateInterval = 60000; // 60 seconds between updates
+    
+    // Update quirk and color with smooth transitions
+    function updateQuirkAndColor() {
         const now = Date.now();
         if (now - lastUpdateTime >= updateInterval) {
             currentQuirkIndex = (currentQuirkIndex + 1) % quirks.length;
+            
+            // Change color randomly (but not to the same color)
+            let newColorIndex;
+            do {
+                newColorIndex = Math.floor(Math.random() * figjamColors.length);
+            } while (newColorIndex === currentColorIndex && figjamColors.length > 1);
+            currentColorIndex = newColorIndex;
             
             // Fade out
             cursorLabel.classList.add('fade-out');
@@ -674,6 +692,7 @@ function setupCustomCursor() {
             
             setTimeout(() => {
                 cursorLabel.textContent = quirks[currentQuirkIndex];
+                cursorLabel.style.backgroundColor = figjamColors[currentColorIndex];
                 cursorLabel.classList.remove('fade-out');
                 cursorLabel.classList.add('fade-in');
             }, 150);
@@ -682,19 +701,13 @@ function setupCustomCursor() {
         }
     }
     
-    // Update quirk every 10 seconds
-    setInterval(updateQuirk, updateInterval);
+    // Update quirk and color every 60 seconds
+    setInterval(updateQuirkAndColor, updateInterval);
     
-    // Real-time cursor following with improved performance
-    let animationId;
+    // Real-time cursor following with zero lag
     document.addEventListener('mousemove', (e) => {
-        // Cancel previous animation frame for smoother movement
-        cancelAnimationFrame(animationId);
-        
-        animationId = requestAnimationFrame(() => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
     });
     
     // Hide cursor on interactive elements
