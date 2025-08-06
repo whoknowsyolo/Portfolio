@@ -5,6 +5,11 @@ const personalToggle = document.getElementById('personalToggle');
 const navItems = document.querySelectorAll('.nav-item');
 const backgroundMusic = document.getElementById('backgroundMusic');
 
+// Doodle elements
+const doodlePenBtn = document.getElementById('doodlePenBtn');
+const colorPalette = document.getElementById('colorPalette');
+const doodleCanvas = document.getElementById('doodleCanvas');
+
 // Page elements
 const pages = {
     home: document.getElementById('homePage'),
@@ -20,6 +25,14 @@ let isPersonalMode = false;
 let isPlaying = false;
 let currentPage = 'home';
 
+// Doodle state
+let isDoodleMode = false;
+let isDrawing = false;
+let currentColor = '#000000';
+let doodleContext = null;
+let doodleStrokes = [];
+let clearTimeouts = [];
+
 // Initialize the application
 function init() {
     setupEventListeners();
@@ -29,6 +42,8 @@ function init() {
     setupCustomCursor();
     setupStickyNotePositions();
     ensureProperNoteVisibility();
+    setupDoodleCanvas();
+    setupDoodlePen();
 }
 
 // Set up all event listeners
@@ -834,6 +849,280 @@ function addRandomRotations() {
         const randomRotation = (Math.random() - 0.5) * 4; // -2 to +2 degrees
         note.style.transform = `rotate(${randomRotation}deg)`;
     });
+}
+
+// Doodle Canvas Setup
+function setupDoodleCanvas() {
+    if (!doodleCanvas) return;
+    
+    // Set canvas size to match viewport
+    function resizeCanvas() {
+        doodleCanvas.width = window.innerWidth;
+        doodleCanvas.height = window.innerHeight;
+    }
+    
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    doodleContext = doodleCanvas.getContext('2d');
+    doodleContext.lineCap = 'round';
+    doodleContext.lineJoin = 'round';
+    doodleContext.lineWidth = 1.5; // Thinner stroke from start
+    doodleContext.strokeStyle = currentColor;
+    
+    // Set up subtle glow effect
+    doodleContext.shadowBlur = 3; // Reduced glow to prevent thickness appearance
+    doodleContext.shadowColor = currentColor;
+    
+    // Ensure consistent stroke thickness
+    doodleContext.imageSmoothingEnabled = true;
+    doodleContext.imageSmoothingQuality = 'high';
+}
+
+// Doodle Pen Setup
+function setupDoodlePen() {
+    if (!doodlePenBtn || !colorPalette) return;
+    
+    // Pen button click
+    doodlePenBtn.addEventListener('click', toggleDoodleMode);
+    
+    // Color palette setup
+    const colorOptions = colorPalette.querySelectorAll('.color-option');
+    colorOptions.forEach((option, index) => {
+        option.addEventListener('click', () => {
+            const color = option.dataset.color;
+            selectColor(color, option);
+        });
+        
+        // Select first color by default
+        if (index === 0) {
+            option.classList.add('selected');
+        }
+    });
+    
+    // Setup canvas drawing events
+    setupCanvasDrawing();
+    
+    // Click outside to close palette
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.doodle-pen-container')) {
+            colorPalette.classList.remove('show');
+        }
+    });
+}
+
+// Toggle doodle mode
+function toggleDoodleMode() {
+    isDoodleMode = !isDoodleMode;
+    
+    if (isDoodleMode) {
+        doodlePenBtn.classList.add('active');
+        doodleCanvas.classList.add('active');
+        document.body.classList.add('pen-cursor');
+        colorPalette.classList.add('show');
+    } else {
+        doodlePenBtn.classList.remove('active');
+        doodleCanvas.classList.remove('active');
+        document.body.classList.remove('pen-cursor');
+        colorPalette.classList.remove('show');
+    }
+}
+
+// Select color
+function selectColor(color, element) {
+    currentColor = color;
+    if (doodleContext) {
+        doodleContext.strokeStyle = color;
+        doodleContext.shadowColor = color; // Update glow color
+    }
+    
+    // Update selected state
+    const colorOptions = colorPalette.querySelectorAll('.color-option');
+    colorOptions.forEach(option => option.classList.remove('selected'));
+    element.classList.add('selected');
+}
+
+// Setup canvas drawing
+function setupCanvasDrawing() {
+    if (!doodleCanvas || !doodleContext) return;
+    
+    let currentStroke = [];
+    
+    // Mouse events
+    doodleCanvas.addEventListener('mousedown', startDrawing);
+    doodleCanvas.addEventListener('mousemove', draw);
+    doodleCanvas.addEventListener('mouseup', stopDrawing);
+    doodleCanvas.addEventListener('mouseout', stopDrawing);
+    
+    // Touch events for mobile
+    doodleCanvas.addEventListener('touchstart', handleTouch);
+    doodleCanvas.addEventListener('touchmove', handleTouch);
+    doodleCanvas.addEventListener('touchend', stopDrawing);
+    
+    function startDrawing(e) {
+        if (!isDoodleMode) return;
+        
+        isDrawing = true;
+        currentStroke = [];
+        
+        const rect = doodleCanvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Set up consistent thin stroke properties
+        doodleContext.lineWidth = 1.5;
+        doodleContext.lineCap = 'round';
+        doodleContext.lineJoin = 'round';
+        doodleContext.shadowBlur = 3; // Subtle glow
+        doodleContext.shadowColor = currentColor;
+        doodleContext.strokeStyle = currentColor;
+        
+        doodleContext.beginPath();
+        doodleContext.moveTo(x, y);
+        currentStroke.push({ x, y, color: currentColor });
+    }
+    
+    function draw(e) {
+        if (!isDrawing || !isDoodleMode) return;
+        
+        const rect = doodleCanvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        doodleContext.lineTo(x, y);
+        doodleContext.stroke();
+        currentStroke.push({ x, y, color: currentColor });
+    }
+    
+    function stopDrawing() {
+        if (!isDrawing) return;
+        
+        isDrawing = false;
+        
+        if (currentStroke.length > 0) {
+            // Store the stroke
+            const strokeData = {
+                points: [...currentStroke],
+                color: currentColor,
+                timestamp: Date.now(),
+                opacity: 1.0
+            };
+            doodleStrokes.push(strokeData);
+            
+            // Set timeout to start fade animation after 7-9 seconds
+            const clearDelay = 7000 + Math.random() * 2000; // 7-9 seconds
+            const timeoutId = setTimeout(() => {
+                startSimpleFade(strokeData);
+            }, clearDelay);
+            
+            clearTimeouts.push(timeoutId);
+        }
+        
+        currentStroke = [];
+    }
+    
+    function handleTouch(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 
+                                        e.type === 'touchmove' ? 'mousemove' : 'mouseup', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        doodleCanvas.dispatchEvent(mouseEvent);
+    }
+}
+
+// Start simple fade animation for a stroke
+function startSimpleFade(stroke) {
+    const fadeStartTime = Date.now();
+    const fadeDuration = 1500; // 1.5 second fade duration for elegance
+    
+    function animateFade() {
+        const elapsed = Date.now() - fadeStartTime;
+        const progress = Math.min(elapsed / fadeDuration, 1);
+        
+        // Simple linear fade with slight easing at the end
+        const easedProgress = progress < 0.8 ? progress : progress + (1 - progress) * 0.3;
+        stroke.opacity = 1 - easedProgress;
+        
+        redrawCanvas();
+        
+        if (progress < 1) {
+            requestAnimationFrame(animateFade);
+        } else {
+            // Remove stroke completely after fade
+            clearStroke(stroke);
+        }
+    }
+    
+    requestAnimationFrame(animateFade);
+}
+
+// Clear a specific stroke
+function clearStroke(strokeToRemove) {
+    // Remove from strokes array
+    const index = doodleStrokes.indexOf(strokeToRemove);
+    if (index > -1) {
+        doodleStrokes.splice(index, 1);
+    }
+    
+    // Redraw canvas without the removed stroke
+    redrawCanvas();
+}
+
+// Redraw entire canvas
+function redrawCanvas() {
+    if (!doodleContext) return;
+    
+    // Clear canvas
+    doodleContext.clearRect(0, 0, doodleCanvas.width, doodleCanvas.height);
+    
+    // Redraw all remaining strokes
+    doodleStrokes.forEach(stroke => {
+        if (stroke.points.length > 0) {
+            const opacity = stroke.opacity || 1.0;
+            
+            // Set up consistent thin stroke style with opacity and glow
+            doodleContext.globalAlpha = opacity;
+            doodleContext.lineWidth = 1.5; // Keep thin throughout fade
+            doodleContext.lineCap = 'round';
+            doodleContext.lineJoin = 'round';
+            doodleContext.strokeStyle = stroke.color;
+            doodleContext.shadowBlur = 3 * opacity; // Subtle glow that fades with opacity
+            doodleContext.shadowColor = stroke.color;
+            
+            // Draw normal continuous stroke
+            doodleContext.beginPath();
+            doodleContext.moveTo(stroke.points[0].x, stroke.points[0].y);
+            
+            stroke.points.forEach(point => {
+                doodleContext.lineTo(point.x, point.y);
+            });
+            
+            doodleContext.stroke();
+        }
+    });
+    
+    // Reset context properties to maintain thin consistency
+    doodleContext.globalAlpha = 1.0;
+    doodleContext.lineWidth = 1.5;
+    doodleContext.lineCap = 'round';
+    doodleContext.lineJoin = 'round';
+    doodleContext.strokeStyle = currentColor;
+    doodleContext.shadowBlur = 3;
+    doodleContext.shadowColor = currentColor;
+}
+
+// Clear all doodles (utility function)
+function clearAllDoodles() {
+    doodleStrokes = [];
+    clearTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
+    clearTimeouts = [];
+    
+    if (doodleContext) {
+        doodleContext.clearRect(0, 0, doodleCanvas.width, doodleCanvas.height);
+    }
 }
 
 // Initialize when DOM is loaded

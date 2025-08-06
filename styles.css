@@ -1305,4 +1305,154 @@ body::after {
     .syncin-image-container {
         height: calc(100% - 80px);
     }
+}
+
+/* Doodle Pen Button Styles */
+.doodle-pen-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 2000;
+}
+
+.doodle-pen-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: visible;
+}
+
+.doodle-pen-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 1);
+}
+
+.doodle-pen-btn.active {
+    background: #00C781;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Color Palette */
+.color-palette {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.color-palette.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.color-option {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.color-option.selected {
+    border-color: #333;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 2px rgba(51, 51, 51, 0.3);
+}
+
+.color-option.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Doodle Canvas */
+#doodleCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#doodleCanvas.active {
+    pointer-events: all;
+    opacity: 1;
+}
+
+/* Pen Cursor */
+.pen-cursor {
+    cursor: crosshair !important;
+}
+
+.pen-cursor * {
+    cursor: crosshair !important;
+}
+
+/* Responsive Design for Doodle Pen */
+@media (max-width: 768px) {
+    .doodle-pen-container {
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .doodle-pen-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .color-palette {
+        bottom: 60px;
+        padding: 10px;
+        gap: 6px;
+    }
+    
+    .color-option {
+        width: 28px;
+        height: 28px;
+    }
 } 
