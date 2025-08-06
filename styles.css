@@ -1307,6 +1307,150 @@ body::after {
     }
 }
 
+/* Project Title in Header */
+.project-title {
+    flex: 1;
+    text-align: center;
+}
+
+.project-title h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+/* PDF Viewer Styles */
+.pdf-viewer-container {
+    width: 100%;
+    height: calc(100vh - 120px);
+    position: relative;
+    background: #f8f9fa;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* PDF Header Bar */
+.pdf-header-bar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.pdf-title {
+    flex: 1;
+    text-align: center;
+}
+
+.pdf-title h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.pdf-controls {
+    display: flex;
+    align-items: center;
+}
+
+.pdf-btn {
+    background: rgba(0, 0, 0, 0.08);
+    color: #333;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pdf-btn:hover {
+    background: rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* PDF Embed Container */
+.pdf-embed-container {
+    width: 100%;
+    height: calc(100% - 60px);
+    position: relative;
+    background: white;
+}
+
+.pdf-iframe {
+    border: none;
+    display: block;
+    background: white;
+}
+
+/* Responsive Design for PDF Viewer */
+@media (max-width: 768px) {
+    .pdf-viewer-container {
+        height: calc(100vh - 100px);
+    }
+    
+    .pdf-header-bar {
+        height: 50px;
+        padding: 0 15px;
+    }
+    
+    .pdf-title h3 {
+        font-size: 14px;
+    }
+    
+    .pdf-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .pdf-embed-container {
+        height: calc(100% - 50px);
+    }
+}
+
+@media (max-width: 480px) {
+    .pdf-header-bar {
+        flex-direction: column;
+        height: 80px;
+        padding: 10px 15px;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .pdf-title {
+        order: 1;
+    }
+    
+    .pdf-controls {
+        order: 2;
+    }
+    
+    .pdf-embed-container {
+        height: calc(100% - 80px);
+    }
+}
+
 /* Doodle Pen Button Styles */
 .doodle-pen-container {
     position: fixed;

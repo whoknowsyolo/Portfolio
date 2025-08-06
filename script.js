@@ -110,6 +110,8 @@ function navigateToProjectDetail(projectId) {
     let projectTitle = '';
     if (projectId === 'syncin') {
         projectTitle = 'Syncin: Innovating Event Management and Engagement';
+    } else if (projectId === 'youthhub') {
+        projectTitle = 'Youth Hub: Designing for Scalable Youth Empowerment';
     } else {
         projectTitle = projectId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
     }
@@ -164,7 +166,50 @@ function loadProjectContent(projectId) {
         `;
         
         // Initialize enhanced zoom functionality
+        // Set current zoom target for global zoom functions
+        window.currentImageContainer = 'syncinImageContainer';
+        window.currentImage = 'syncinImage';
         initializeEnhancedZoom();
+    } else if (projectId === 'youthhub') {
+        // Load Youth Hub image case study with enhanced functionality
+        embedContainer.innerHTML = `
+            <div class="syncin-case-study" id="youthHubCaseStudy">
+                <!-- Sticky Header Bar -->
+                <div class="syncin-header-bar">
+                    <div class="macos-controls">
+                        <div class="control-btn red"></div>
+                        <div class="control-btn yellow"></div>
+                        <div class="control-btn green"></div>
+                    </div>
+                    <div class="syncin-controls">
+                        <div class="project-title">
+                            <h3>Youth Hub: Designing for Scalable Youth Empowerment</h3>
+                        </div>
+                        <div class="zoom-controls">
+                            <button class="zoom-btn" onclick="zoomOut()">−</button>
+                            <span class="zoom-level">50%</span>
+                            <button class="zoom-btn" onclick="zoomIn()">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Image Container -->
+                <div class="syncin-image-container" id="youthHubImageContainer">
+                    <img 
+                        src="PDFs/youthhub.png" 
+                        alt="Youth Hub Project Case Study" 
+                        class="syncin-detail-image"
+                        id="youthHubImage"
+                    >
+                </div>
+            </div>
+        `;
+        
+        // Initialize enhanced zoom functionality for Youth Hub
+        // Set current zoom target for global zoom functions
+        window.currentImageContainer = 'youthHubImageContainer';
+        window.currentImage = 'youthHubImage';
+        initializeEnhancedZoom('youthHubImageContainer', 'youthHubImage');
     } else {
         // Default placeholder for other projects
         embedContainer.innerHTML = `
@@ -188,9 +233,9 @@ let lastMouseY = 0;
 let scrollLeft = 0;
 let scrollTop = 0;
 
-function initializeEnhancedZoom() {
-    const imageContainer = document.getElementById('syncinImageContainer');
-    const image = document.getElementById('syncinImage');
+function initializeEnhancedZoom(containerId = 'syncinImageContainer', imageId = 'syncinImage') {
+    const imageContainer = document.getElementById(containerId);
+    const image = document.getElementById(imageId);
     
     if (!imageContainer || !image) return;
     
@@ -495,7 +540,8 @@ function ensureImageCentering() {
 }
 
 function zoomIn() {
-    const imageContainer = document.getElementById('syncinImageContainer');
+    const containerid = window.currentImageContainer || 'syncinImageContainer';
+    const imageContainer = document.getElementById(containerid);
     if (!imageContainer) return;
     
     const rect = imageContainer.getBoundingClientRect();
@@ -506,7 +552,8 @@ function zoomIn() {
 }
 
 function zoomOut() {
-    const imageContainer = document.getElementById('syncinImageContainer');
+    const containerid = window.currentImageContainer || 'syncinImageContainer';
+    const imageContainer = document.getElementById(containerid);
     if (!imageContainer) return;
     
     const rect = imageContainer.getBoundingClientRect();
