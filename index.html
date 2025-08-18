@@ -10,7 +10,9 @@
 <body>
     <!-- Top Bar -->
     <div class="top-bar">
-        <div class="top-left">Aman Sinha</div>
+        <div class="top-left">
+            <a href="#" class="home-link">Aman Sinha</a>
+        </div>
         <div class="top-center">🌞 Good morning, dreamer!</div>
         <div class="top-right">8 June 2004 | 5:07 PM | Delhi</div>
     </div>
@@ -27,39 +29,69 @@
             </div>
 
             <!-- Work Side Sticky Notes -->
-            <div class="sticky-note work-note" id="aboutNote" style="top: 150px; left: 200px; background-color: #FFE066;">
-                <div class="note-content">
-                    <h3>About Me</h3>
-                    <p>Click to learn more about my journey...</p>
-                </div>
-            </div>
-
-            <div class="sticky-note music-player-note work-note" id="playSongNote" style="top: 300px; left: 400px;">
+            <div class="sticky-note music-player-note work-note" id="playSongNote">
                 <div class="note-content">
                     <h3>Now Playing</h3>
-                    <div class="music-player-content">
-                        <div class="album-cover">🎵</div>
-                        <div class="song-info">
-                            <div class="song-title">Bohemian Rhapsody</div>
-                            <div class="artist-name">Queen</div>
-                        </div>
-                    </div>
-                    <div class="music-controls">
-                        <button class="music-btn" id="playPauseBtn">▶️</button>
-                        <button class="music-btn" id="nextBtn">⏭️</button>
+                    <div class="spotify-embed-container">
+                        <iframe 
+                            data-testid="embed-iframe" 
+                            style="border-radius:12px" 
+                            src="https://open.spotify.com/embed/playlist/4DMhUbRLwfR1AGUH5NJZnT?utm_source=generator" 
+                            width="100%" 
+                            height="100%" 
+                            frameBorder="0" 
+                            allowfullscreen="" 
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                            loading="lazy">
+                        </iframe>
                     </div>
                 </div>
             </div>
 
-            <div class="sticky-note work-note" id="projectsNote" style="top: 200px; left: 600px; background-color: #FFB3BA;">
+            <!-- New Image Sticky Note -->
+            <div class="sticky-note image-note work-note" id="imageNote" style="top: 80px; left: 50px;">
                 <div class="note-content">
-                    <h3>Projects</h3>
-                    <p>Check out my latest work...</p>
+                    <div class="image-container">
+                        <img src="Images/Screenshot 2025-08-17 224007.png" alt="Portfolio Image" class="sticky-image">
+                    </div>
+                </div>
+            </div>
+
+            <!-- LinkedIn Sticky Note -->
+            <div class="sticky-note linkedin-note work-note" id="linkedinNote">
+                <div class="note-content">
+                    <p>This is where my résumé wears a suit.</p>
+                    <a href="https://www.linkedin.com/in/amannsinhaa/" target="_blank" class="linkedin-link">LinkedIn Profile</a>
+                </div>
+            </div>
+
+            <!-- Text Sticky Notes -->
+            <div class="sticky-note text-note work-note" id="textNote1">
+                <div class="note-content">
+                    <p>Less pixels, more purpose</p>
+                </div>
+            </div>
+
+            <div class="sticky-note text-note work-note" id="textNote2">
+                <div class="note-content">
+                    <p>I map messiness into meaning</p>
+                </div>
+            </div>
+
+            <div class="sticky-note text-note work-note" id="textNote4">
+                <div class="note-content">
+                    <p>I zoom out, then zoom way back in.</p>
+                </div>
+            </div>
+
+            <div class="sticky-note text-note work-note" id="textNote5">
+                <div class="note-content">
+                    <p>Design is my way of asking better questions.</p>
                 </div>
             </div>
 
             <!-- Personal Side Sticky Notes (initially hidden) -->
-            <div class="sticky-note personal-note tv-note" id="tvNote" style="top: 120px; left: 150px; background-color: #2C3E50;">
+            <div class="sticky-note personal-note tv-note" id="tvNote" style="background-color: #2C3E50;">
                 <div class="note-content">
                     <div class="tv-screen">
                         <div class="tv-static"></div>
@@ -73,31 +105,31 @@
                 </div>
             </div>
 
-            <div class="sticky-note personal-note" id="personalNote2" style="top: 250px; left: 350px; background-color: #6BCF7F;">
+            <div class="sticky-note personal-note" id="personalNote2" style="background-color: #6BCF7F;">
                 <div class="note-content">
-                    <h3>Music</h3>
-                    <p>🎸 What I'm listening to...</p>
+                    <h3>🎯 Personal Goals</h3>
+                    <p>Building a life that's both meaningful and fun.</p>
                 </div>
             </div>
 
-            <div class="sticky-note personal-note" id="personalNote3" style="top: 180px; left: 550px; background-color: #FF6B6B;">
+            <div class="sticky-note personal-note" id="personalNote3" style="background-color: #FF6B6B;">
                 <div class="note-content">
-                    <h3>Travel</h3>
-                    <p>✈️ Recent adventures...</p>
+                    <h3>🌟 Interests</h3>
+                    <p>Design, technology, and the intersection of both.</p>
                 </div>
             </div>
 
-            <div class="sticky-note personal-note" id="personalNote4" style="top: 320px; left: 200px; background-color: #4ECDC4;">
+            <div class="sticky-note personal-note" id="personalNote4" style="background-color: #4ECDC4;">
                 <div class="note-content">
-                    <h3>Books</h3>
-                    <p>📚 Currently reading...</p>
+                    <h3>💭 Philosophy</h3>
+                    <p>Good design should feel invisible yet memorable.</p>
                 </div>
             </div>
 
-            <div class="sticky-note personal-note" id="personalNote5" style="top: 100px; left: 450px; background-color: #FF8E53;">
+            <div class="sticky-note personal-note" id="personalNote5" style="background-color: #FF8E53;">
                 <div class="note-content">
-                    <h3>Hobbies</h3>
-                    <p>🎨 Creative pursuits...</p>
+                    <h3>🎨 Creative Process</h3>
+                    <p>Start with empathy, end with iteration.</p>
                 </div>
             </div>
 
@@ -136,10 +168,10 @@ If you're curious, just <a href="mailto:amansinha5036@gmail.com" class="email-li
                 <div class="project-grid">
                     <div class="project-box" data-project="syncin">
                         <div class="project-image">
-                            <img src="Images/Screenshot 2025-08-04 033740.png" alt="Syncin Project" class="project-thumbnail">
+                            <img src="Images/Screenshot 2025-08-04 033740.png" alt="Syncin Project" class="project-thumbnail" />
                         </div>
-                        <div class="project-overlay">
-                            <h3>Syncin: Innovating Event Management and Engagement</h3>
+                        <div class="project-content">
+                            <h3 class="project-title">Syncin: Innovating event management and engagement</h3>
                             <div class="project-tags">
                                 <span class="tag">Systems Design</span>
                                 <span class="tag">Interaction Design</span>
@@ -151,14 +183,29 @@ If you're curious, just <a href="mailto:amansinha5036@gmail.com" class="email-li
                     
                     <div class="project-box" data-project="youthhub">
                         <div class="project-image">
-                            <img src="Images/Screenshot 2025-08-04 050509.png" alt="Youth Hub Project" class="project-thumbnail">
+                            <img src="Images/Screenshot 2025-08-04 050509.png" alt="Youth Hub Project" class="project-thumbnail" />
                         </div>
-                        <div class="project-overlay">
-                            <h3>Youth Hub: Designing for Scalable Youth Empowerment</h3>
+                        <div class="project-content">
+                            <h3 class="project-title">Youth Hub: Designing for scalable youth empowerment</h3>
                             <div class="project-tags">
                                 <span class="tag">Service Design</span>
                                 <span class="tag">Social Design</span>
-                                <span class="tag">Strategy & Research</span>
+                                <span class="tag">Strategy and Research</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="project-box" data-project="raahi">
+                        <div class="project-image">
+                            <img src="Images/Raahi.avif" alt="Raahi Project" class="project-thumbnail" />
+                        </div>
+                        <div class="project-content">
+                            <h3 class="project-title">Raahi: Designing for safer Highways</h3>
+                            <div class="project-tags">
+                                <span class="tag">Behavioral Design</span>
+                                <span class="tag">Strategy and Research</span>
+                                <span class="tag">Interaction Design</span>
+                                <span class="tag">Systems Design</span>
                             </div>
                         </div>
                     </div>
@@ -167,9 +214,9 @@ If you're curious, just <a href="mailto:amansinha5036@gmail.com" class="email-li
                         <div class="project-image">
                             <div class="image-placeholder">🌐</div>
                         </div>
-                        <div class="project-overlay">
-                            <h3>Web Platform</h3>
-                            <p>Full-stack web application with modern architecture</p>
+                        <div class="project-content">
+                            <h3 class="project-title">Web Platform</h3>
+                            <p class="project-description">Full-stack web application with modern architecture</p>
                         </div>
                     </div>
                     
@@ -177,9 +224,9 @@ If you're curious, just <a href="mailto:amansinha5036@gmail.com" class="email-li
                         <div class="project-image">
                             <div class="image-placeholder">🎨</div>
                         </div>
-                        <div class="project-overlay">
-                            <h3>Design System</h3>
-                            <p>Comprehensive design system and component library</p>
+                        <div class="project-content">
+                            <h3 class="project-title">Design System</h3>
+                            <p class="project-description">Comprehensive design system and component library</p>
                         </div>
                     </div>
                     
@@ -187,9 +234,9 @@ If you're curious, just <a href="mailto:amansinha5036@gmail.com" class="email-li
                         <div class="project-image">
                             <div class="image-placeholder">📊</div>
                         </div>
-                        <div class="project-overlay">
-                            <h3>Data Analytics Dashboard</h3>
-                            <p>Interactive dashboard for data visualization</p>
+                        <div class="project-content">
+                            <h3 class="project-title">Data Analytics Dashboard</h3>
+                            <p class="project-description">Interactive dashboard for data visualization</p>
                         </div>
                     </div>
                     
@@ -197,9 +244,9 @@ If you're curious, just <a href="mailto:amansinha5036@gmail.com" class="email-li
                         <div class="project-image">
                             <div class="image-placeholder">🤖</div>
                         </div>
-                        <div class="project-overlay">
-                            <h3>AI Integration</h3>
-                            <p>Machine learning integration for automation</p>
+                        <div class="project-content">
+                            <h3 class="project-title">AI Integration</h3>
+                            <p class="project-description">Machine learning integration for automation</p>
                         </div>
                     </div>
                     
@@ -207,9 +254,9 @@ If you're curious, just <a href="mailto:amansinha5036@gmail.com" class="email-li
                         <div class="project-image">
                             <div class="image-placeholder">🔒</div>
                         </div>
-                        <div class="project-overlay">
-                            <h3>Security Framework</h3>
-                            <p>Robust security implementation for enterprise</p>
+                        <div class="project-content">
+                            <h3 class="project-title">Security Framework</h3>
+                            <p class="project-description">Robust security implementation for enterprise</p>
                         </div>
                     </div>
                 </div>
@@ -219,10 +266,6 @@ If you're curious, just <a href="mailto:amansinha5036@gmail.com" class="email-li
         <!-- Project Detail Page -->
         <div class="page-content" id="projectDetailPage">
             <div class="project-detail-content">
-                <button class="back-button" onclick="goBackToWorks()">
-                    ← Back to Works
-                </button>
-                
                 <!-- Dynamic Project Content Container -->
                 <div class="project-embed-container">
                     <div class="project-embed-placeholder">
@@ -237,28 +280,16 @@ If you're curious, just <a href="mailto:amansinha5036@gmail.com" class="email-li
         <div class="page-content" id="resumePage">
             <div class="resume-content">
                 <h1 class="page-title">Resume</h1>
-                <p class="page-description">📄 Professional Summary</p>
                 
-                <h3>Skills</h3>
-                <ul>
-                    <li>JavaScript, TypeScript, React, Vue.js</li>
-                    <li>Node.js, Python, SQL, NoSQL</li>
-                    <li>HTML5, CSS3, SASS, Git</li>
-                    <li>Figma, Adobe Creative Suite</li>
-                </ul>
+                <!-- Download PDF Link -->
+                <div class="resume-download">
+                    <a href="PDFs/Aman Sinha Resume 2025.pdf" class="download-link" download>📄 Download PDF</a>
+                </div>
                 
-                <h3>Education</h3>
-                <p>Bachelor's in Computer Science (Expected 2026)</p>
-                
-                <h3>Experience</h3>
-                <p>I've had the privilege of working on diverse projects across different domains:</p>
-                <ul>
-                    <li><strong>Frontend Development</strong> - React, Vue, vanilla JS</li>
-                    <li><strong>Backend Development</strong> - Node.js, Python, databases</li>
-                    <li><strong>UI/UX Design</strong> - User-centered design principles</li>
-                </ul>
-                
-                <p><em>Download full resume: <a href="#" style="color: #333; text-decoration: underline;">PDF Version</a></em></p>
+                <!-- Resume Image -->
+                <div class="timeline-image-container">
+                    <img src="PDFs/Resume 2025.png" alt="Resume 2025" class="timeline-image resume-image">
+                </div>
             </div>
         </div>
 
@@ -266,9 +297,20 @@ If you're curious, just <a href="mailto:amansinha5036@gmail.com" class="email-li
         <div class="page-content" id="naytvPage">
             <div class="naytv-content">
                 <h1 class="page-title">My Calendar</h1>
-                <p class="page-description">📅 Schedule & Availability</p>
-                <p>This section is under development. Something exciting is brewing here!</p>
-                <p>Stay tuned for updates on this new project.</p>
+                <p class="page-description">An overview of education, internships, projects, and leadership roles (2020–Present)</p>
+                
+                <!-- Timeline Image Container -->
+                <div class="timeline-image-container">
+                    <img src="PDFs/final_timeline.png" alt="Professional Journey Timeline" class="timeline-image" id="timelineImage">
+                </div>
+            </div>
+        </div>
+
+        <!-- Lightbox Modal -->
+        <div class="lightbox-modal" id="lightboxModal">
+            <div class="lightbox-content">
+                <button class="lightbox-close" id="lightboxClose">&times;</button>
+                <img src="PDFs/final_timeline.png" alt="Professional Journey Timeline" class="lightbox-image">
             </div>
         </div>
     </div>
@@ -282,10 +324,7 @@ If you're curious, just <a href="mailto:amansinha5036@gmail.com" class="email-li
         <button class="nav-item" data-page="naytv">My Calendar</button>
     </nav>
 
-    <!-- Audio Player (hidden) -->
-    <audio id="backgroundMusic" preload="auto">
-        <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" type="audio/wav">
-    </audio>
+    <!-- Audio Player removed - now using Spotify embed -->
 
     <!-- Doodle Pen Button -->
     <div class="doodle-pen-container">

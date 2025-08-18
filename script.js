@@ -62,23 +62,10 @@ function setupEventListeners() {
         box.addEventListener('click', handleProjectClick);
     });
 
-    // Music player controls
-    const playPauseBtn = document.getElementById('playPauseBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    
-    if (playPauseBtn) {
-        playPauseBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleMusic();
-        });
-    }
-    
-    if (nextBtn) {
-        nextBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            nextSong();
-        });
-    }
+    // Browser back button handling
+    window.addEventListener('popstate', handleBrowserBack);
+
+    // Music player controls - removed since we now use Spotify embed
 }
 
 // Handle project box clicks
@@ -89,14 +76,23 @@ function handleProjectClick(e) {
 
 // Navigate to project detail page
 function navigateToProjectDetail(projectId) {
+    console.log('navigateToProjectDetail called with:', projectId);
+    
+    // Add to browser history so back button works
+    const currentState = { page: 'projectDetail', projectId: projectId };
+    const currentUrl = window.location.pathname + '#project-' + projectId;
+    window.history.pushState(currentState, '', currentUrl);
+    
     // Hide current page
     if (pages[currentPage]) {
         pages[currentPage].classList.remove('active');
+        console.log('Hidden current page:', currentPage);
     }
     
     // Show project detail page
     if (pages.projectDetail) {
         pages.projectDetail.classList.add('active');
+        console.log('Showed project detail page');
     }
     
     // Update navigation state
@@ -112,10 +108,21 @@ function navigateToProjectDetail(projectId) {
         projectTitle = 'Syncin: Innovating Event Management and Engagement';
     } else if (projectId === 'youthhub') {
         projectTitle = 'Youth Hub: Designing for Scalable Youth Empowerment';
+    } else if (projectId === 'raahi') {
+        projectTitle = 'Raahi: Designing for Safer Highways';
     } else {
         projectTitle = projectId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
     }
     document.title = `Project - ${projectTitle} - Aman Sinha`;
+    
+    // Hide navigation menu and doodle canvas on project detail pages
+    const navMenu = document.querySelector('.nav-menu');
+    const doodleCanvas = document.getElementById('doodleCanvas');
+    const doodlePenBtn = document.getElementById('doodlePenBtn');
+    
+    if (navMenu) navMenu.style.display = 'none';
+    if (doodleCanvas) doodleCanvas.style.display = 'none';
+    if (doodlePenBtn) doodlePenBtn.style.display = 'none';
     
     // Load project content
     loadProjectContent(projectId);
@@ -124,6 +131,8 @@ function navigateToProjectDetail(projectId) {
 // Load project content based on project ID
 function loadProjectContent(projectId) {
     const embedContainer = document.querySelector('.project-embed-container');
+    console.log('Loading project content for:', projectId);
+    console.log('Embed container:', embedContainer);
     
     if (projectId === 'syncin') {
         // Load Syncin case study with enhanced functionality
@@ -137,40 +146,69 @@ function loadProjectContent(projectId) {
                         <div class="control-btn green"></div>
                     </div>
                     <div class="syncin-controls">
-                        <div class="video-buttons">
-                            <a href="https://youtu.be/PcAVUDy6rss" target="_blank" class="video-btn">
+                        <div class="video-buttons" style="display: flex !important; visibility: visible !important; opacity: 1 !important;">
+                            <a href="https://youtu.be/PcAVUDy6rss" target="_blank" class="video-btn" style="display: flex !important; visibility: visible !important; opacity: 1 !important;">
                                 🎥 Domain Video
                             </a>
-                            <a href="https://youtu.be/QpjhAR3kuS8" target="_blank" class="video-btn">
+                            <a href="https://youtu.be/QpjhAR3kuS8" target="_blank" class="video-btn" style="display: flex !important; visibility: visible !important; opacity: 1 !important;">
                                 🎬 PoC Video
                             </a>
                         </div>
-                        <div class="zoom-controls">
-                            <button class="zoom-btn" onclick="zoomOut()">−</button>
-                            <span class="zoom-level">50%</span>
-                            <button class="zoom-btn" onclick="zoomIn()">+</button>
-                        </div>
+                    </div>
+                    <div class="back-button-container">
+                        <button class="back-button" onclick="goBackToWorks()">
+                            ← Back to Works
+                        </button>
                     </div>
                 </div>
                 
-                <!-- Image Container -->
+                <!-- PDF Container -->
                 <div class="syncin-image-container" id="syncinImageContainer">
-                    <img 
-                        src="PDFs/syncinimage.png" 
-                        alt="Syncin Project Case Study" 
-                        class="syncin-detail-image"
+                    <embed 
+                        src="PDFs/syncin.pdf#zoom=33" 
+                        type="application/pdf" 
+                        class="syncin-detail-pdf"
                         id="syncinImage"
                     >
                 </div>
             </div>
         `;
-        
-        // Initialize enhanced zoom functionality
-        // Set current zoom target for global zoom functions
-        window.currentImageContainer = 'syncinImageContainer';
-        window.currentImage = 'syncinImage';
-        initializeEnhancedZoom();
-    } else if (projectId === 'youthhub') {
+        console.log('Syncin project HTML loaded');
+        // Debug: check if elements are created
+        setTimeout(() => {
+            const headerBar = document.querySelector('.syncin-header-bar');
+            const videoButtons = document.querySelector('.video-buttons');
+            const backButton = document.querySelector('.back-button-container');
+            console.log('Header bar:', headerBar);
+            console.log('Video buttons:', videoButtons);
+            console.log('Back button container:', backButton);
+            
+            // Additional debugging for video buttons
+            if (videoButtons) {
+                console.log('Video buttons found:', videoButtons);
+                console.log('Video buttons display:', window.getComputedStyle(videoButtons).display);
+                console.log('Video buttons visibility:', window.getComputedStyle(videoButtons).visibility);
+                console.log('Video buttons opacity:', window.getComputedStyle(videoButtons).opacity);
+            }
+            
+            // Additional debugging for back button
+            if (backButton) {
+                console.log('Back button container found:', backButton);
+                const actualBackButton = backButton.querySelector('.back-button');
+                if (actualBackButton) {
+                    console.log('Actual back button found:', actualBackButton);
+                    console.log('Back button display:', window.getComputedStyle(actualBackButton).display);
+                    console.log('Back button cursor:', window.getComputedStyle(actualBackButton).cursor);
+                    
+                    // Add click event listener for debugging
+                    actualBackButton.addEventListener('click', (e) => {
+                        console.log('Back button clicked!', e);
+                        goBackToWorks();
+                    });
+                }
+            }
+        }, 100);
+        } else if (projectId === 'youthhub') {
         // Load Youth Hub image case study with enhanced functionality
         embedContainer.innerHTML = `
             <div class="syncin-case-study" id="youthHubCaseStudy">
@@ -182,34 +220,112 @@ function loadProjectContent(projectId) {
                         <div class="control-btn green"></div>
                     </div>
                     <div class="syncin-controls">
-                        <div class="project-title">
-                            <h3>Youth Hub: Designing for Scalable Youth Empowerment</h3>
-                        </div>
-                        <div class="zoom-controls">
-                            <button class="zoom-btn" onclick="zoomOut()">−</button>
-                            <span class="zoom-level">50%</span>
-                            <button class="zoom-btn" onclick="zoomIn()">+</button>
-                        </div>
+                        <!-- No video buttons for Youth Hub -->
+                    </div>
+                    <div class="back-button-container">
+                        <button class="back-button" onclick="goBackToWorks()">
+                            ← Back to Works
+                        </button>
                     </div>
                 </div>
                 
-                <!-- Image Container -->
+                <!-- PDF Container -->
                 <div class="syncin-image-container" id="youthHubImageContainer">
-                    <img 
-                        src="PDFs/youthhub.png" 
-                        alt="Youth Hub Project Case Study" 
-                        class="syncin-detail-image"
+                    <embed 
+                        src="PDFs/youthhub.pdf#zoom=33" 
+                        type="application/pdf" 
+                        class="syncin-detail-pdf"
                         id="youthHubImage"
                     >
                 </div>
             </div>
         `;
-        
-        // Initialize enhanced zoom functionality for Youth Hub
-        // Set current zoom target for global zoom functions
-        window.currentImageContainer = 'youthHubImageContainer';
-        window.currentImage = 'youthHubImage';
-        initializeEnhancedZoom('youthHubImageContainer', 'youthHubImage');
+        console.log('Youth Hub project HTML loaded');
+        // Debug: check if elements are created
+        setTimeout(() => {
+            const headerBar = document.querySelector('.syncin-header-bar');
+            const videoButtons = document.querySelector('.video-buttons');
+            const backButton = document.querySelector('.back-button-container');
+            console.log('Header bar:', headerBar);
+            console.log('Video buttons:', videoButtons);
+            console.log('Back button container:', backButton);
+            
+            // Additional debugging for back button
+            if (backButton) {
+                console.log('Back button container found:', backButton);
+                const actualBackButton = backButton.querySelector('.back-button');
+                if (actualBackButton) {
+                    console.log('Actual back button found:', actualBackButton);
+                    console.log('Back button display:', window.getComputedStyle(actualBackButton).display);
+                    console.log('Back button cursor:', window.getComputedStyle(actualBackButton).cursor);
+                    
+                    // Add click event listener for debugging
+                    actualBackButton.addEventListener('click', (e) => {
+                        console.log('Back button clicked!', e);
+                        goBackToWorks();
+                    });
+                }
+            }
+        }, 100);
+        } else if (projectId === 'raahi') {
+        // Load Raahi case study with enhanced functionality
+        embedContainer.innerHTML = `
+            <div class="syncin-case-study" id="raahiCaseStudy">
+                <!-- Sticky Header Bar -->
+                <div class="syncin-header-bar">
+                    <div class="macos-controls">
+                        <div class="control-btn red"></div>
+                        <div class="control-btn yellow"></div>
+                        <div class="control-btn green"></div>
+                    </div>
+                    <div class="syncin-controls">
+                        <!-- No video buttons for Raahi -->
+                    </div>
+                    <div class="back-button-container">
+                        <button class="back-button" onclick="goBackToWorks()">
+                            ← Back to Works
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- PDF Container -->
+                <div class="syncin-image-container" id="raahiImageContainer">
+                    <embed 
+                        src="PDFs/raahiaman.pdf#zoom=33" 
+                        type="application/pdf" 
+                        class="syncin-detail-pdf"
+                        id="raahiImage"
+                    >
+                </div>
+            </div>
+        `;
+        console.log('Raahi project HTML loaded');
+        // Debug: check if elements are created
+        setTimeout(() => {
+            const headerBar = document.querySelector('.syncin-header-bar');
+            const videoButtons = document.querySelector('.video-buttons');
+            const backButton = document.querySelector('.back-button-container');
+            console.log('Header bar:', headerBar);
+            console.log('Video buttons:', videoButtons);
+            console.log('Back button container:', backButton);
+            
+            // Additional debugging for back button
+            if (backButton) {
+                console.log('Back button container found:', backButton);
+                const actualBackButton = backButton.querySelector('.back-button');
+                if (actualBackButton) {
+                    console.log('Actual back button found:', actualBackButton);
+                    console.log('Back button display:', window.getComputedStyle(actualBackButton).display);
+                    console.log('Back button cursor:', window.getComputedStyle(actualBackButton).cursor);
+                    
+                    // Add click event listener for debugging
+                    actualBackButton.addEventListener('click', (e) => {
+                        console.log('Back button clicked!', e);
+                        goBackToWorks();
+                    });
+                }
+            }
+        }, 100);
     } else {
         // Default placeholder for other projects
         embedContainer.innerHTML = `
@@ -563,9 +679,78 @@ function zoomOut() {
     zoomOutAtPoint(centerX, centerY);
 }
 
+// Handle browser back button
+function handleBrowserBack(event) {
+    console.log('Browser back button pressed');
+    console.log('Event state:', event.state);
+    
+    // If we're on a project detail page and going back, go to works page
+    if (currentPage === 'projectDetail') {
+        console.log('Going back from project detail to works page');
+        goBackToWorks();
+    }
+}
+
 // Go back to works page
 function goBackToWorks() {
-    navigateToPage('works');
+    console.log('goBackToWorks called');
+    console.log('Current page before going back:', currentPage);
+    console.log('Pages object:', pages);
+    
+    // Update browser history to reflect we're going back to works
+    const worksState = { page: 'works' };
+    const worksUrl = window.location.pathname + '#works';
+    window.history.pushState(worksState, '', worksUrl);
+    
+    // Hide project detail page
+    if (pages.projectDetail) {
+        pages.projectDetail.classList.remove('active');
+        console.log('Hidden project detail page');
+    } else {
+        console.log('Warning: projectDetail page not found in pages object');
+    }
+    
+    // Show works page
+    if (pages.works) {
+        pages.works.classList.add('active');
+        console.log('Showed works page');
+    } else {
+        console.log('Warning: works page not found in pages object');
+    }
+    
+    // Update navigation state
+    navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.page === 'works') {
+            item.classList.add('active');
+            console.log('Activated works nav item:', item);
+        }
+    });
+    
+    // Update current page
+    currentPage = 'works';
+    console.log('Updated current page to:', currentPage);
+    
+    // Update page title
+    updatePageTitle('works');
+    
+    // Show navigation menu and doodle canvas
+    const navMenu = document.querySelector('.nav-menu');
+    const doodleCanvas = document.getElementById('doodleCanvas');
+    const doodlePenBtn = document.getElementById('doodlePenBtn');
+    
+    if (navMenu) {
+        navMenu.style.display = 'flex';
+        console.log('Showed navigation menu');
+    } else {
+        console.log('Warning: navigation menu not found');
+    }
+    
+    if (doodleCanvas) doodleCanvas.style.display = 'none';
+    if (doodlePenBtn) doodlePenBtn.style.display = 'none';
+    
+    console.log('Successfully navigated back to works page');
+    console.log('Final current page:', currentPage);
 }
 
 // Handle navigation clicks
@@ -601,6 +786,19 @@ function navigateToPage(pageName) {
     
     // Update page title
     updatePageTitle(pageName);
+    
+    // Show navigation menu for all pages except project detail
+    const navMenu = document.querySelector('.nav-menu');
+    if (navMenu) navMenu.style.display = 'flex';
+    
+    // Handle doodle canvas visibility
+    if (pageName === 'home') {
+        document.getElementById('doodleCanvas').style.display = 'block';
+        document.getElementById('doodlePenBtn').style.display = 'block';
+    } else {
+        document.getElementById('doodleCanvas').style.display = 'none';
+        document.getElementById('doodlePenBtn').style.display = 'none';
+    }
 }
 
 // Update page title
@@ -654,29 +852,7 @@ function ensureProperNoteVisibility() {
     }
 }
 
-// Music player controls for sticky note
-function toggleMusic() {
-    const playPauseBtn = document.getElementById('playPauseBtn');
-    
-    if (isPlaying) {
-        backgroundMusic.pause();
-        backgroundMusic.currentTime = 0;
-        isPlaying = false;
-        playPauseBtn.textContent = '▶️';
-    } else {
-        backgroundMusic.play().catch(e => {
-            console.log('Audio play failed:', e);
-        });
-        isPlaying = true;
-        playPauseBtn.textContent = '⏸️';
-    }
-}
-
-function nextSong() {
-    // Placeholder for next song functionality
-    console.log('Next song clicked');
-    // You can implement a playlist system here
-}
+// Music player controls - removed since we now use Spotify embed
 
 // Update greeting message and static date with new time ranges
 function updateGreetingAndDate() {
@@ -770,11 +946,18 @@ function setupCustomCursor() {
     document.addEventListener('mousemove', (e) => {
         cursor.style.left = e.clientX + 'px';
         cursor.style.top = e.clientY + 'px';
+        
+        // Hide cursor when over PDF or embed elements
+        if (e.target.closest('embed') || e.target.closest('.syncin-detail-pdf')) {
+            cursor.style.opacity = '0';
+        } else if (!e.target.closest('.sticky-note') && !e.target.closest('.nav-item') && !e.target.closest('.side-toggle') && !e.target.closest('.project-box')) {
+            cursor.style.opacity = '1';
+        }
     });
     
     // Hide cursor on interactive elements
     document.addEventListener('mouseover', (e) => {
-        if (e.target.closest('.sticky-note') || e.target.closest('.nav-item') || e.target.closest('.side-toggle') || e.target.closest('.project-box')) {
+        if (e.target.closest('.sticky-note') || e.target.closest('.nav-item') || e.target.closest('.side-toggle') || e.target.closest('.project-box') || e.target.closest('embed') || e.target.closest('.syncin-detail-pdf')) {
             cursor.style.opacity = '0';
         } else {
             cursor.style.opacity = '1';
@@ -793,27 +976,100 @@ function setupStickyNotePositions() {
     const introRect = introSection.getBoundingClientRect();
     const canvasRect = canvas.getBoundingClientRect();
     
-    // Define safe zones around the intro text
+    // Calculate intro section boundaries with padding
+    const introLeft = introRect.left - canvasRect.left;
+    const introRight = introRect.right - canvasRect.left;
+    const introTop = introRect.top - canvasRect.top;
+    const introBottom = introRect.bottom - canvasRect.top;
+    
+    // Place image note directly above the hero text for balance
+    const imageNote = document.getElementById('imageNote');
+    if (imageNote) {
+        const imageNoteWidth = 280; // Width of image note
+        const imageNoteHeight = 200; // Height of image note
+        
+        // Center the image note above the intro section
+        const imageNoteX = introLeft + (introRight - introLeft) / 2 - imageNoteWidth / 2;
+        const imageNoteY = introTop - imageNoteHeight - 30; // 30px gap above intro
+        
+        imageNote.style.left = imageNoteX + 'px';
+        imageNote.style.top = imageNoteY + 'px';
+        imageNote.style.transform = 'rotate(0deg)'; // Keep it straight
+    }
+    
+    // Define safe zones that frame the intro section without overlap
+    // Exclude the area where the image note is placed
     const safeZones = [
-        { x: 50, y: 50, width: 200, height: 150 }, // Top left
-        { x: canvasRect.width - 250, y: 50, width: 200, height: 150 }, // Top right
-        { x: 50, y: canvasRect.height - 200, width: 200, height: 150 }, // Bottom left
-        { x: canvasRect.width - 250, y: canvasRect.height - 200, width: 200, height: 150 }, // Bottom right
-        { x: canvasRect.width / 2 - 100, y: 50, width: 200, height: 100 }, // Top center
-        { x: canvasRect.width / 2 - 100, y: canvasRect.height - 150, width: 200, height: 100 } // Bottom center
+        // Top left area (above and to the left of intro, avoiding image note)
+        { x: 50, y: 50, width: 200, height: 120 },
+        // Top right area (above and to the right of intro, avoiding image note)
+        { x: introRight + 30, y: 50, width: 200, height: 120 },
+        // Left side middle (to the left of intro)
+        { x: 50, y: introTop + 50, width: 200, height: 160 },
+        // Right side middle (to the right of intro)
+        { x: introRight + 30, y: introTop + 50, width: 200, height: 160 },
+        // Bottom left area (below and to the left of intro)
+        { x: 50, y: introBottom + 30, width: 200, height: 160 },
+        // Bottom right area (below and to the right of intro)
+        { x: introRight + 30, y: introBottom + 30, width: 200, height: 160 },
+        // Far left area (well to the left)
+        { x: 20, y: introTop + 200, width: 200, height: 160 },
+        // Far right area (well to the right)
+        { x: introRight + 100, y: introTop + 200, width: 200, height: 160 },
+        // Additional zones for better distribution
+        { x: introLeft - 250, y: introTop - 100, width: 200, height: 160 },
+        { x: introRight + 80, y: introTop - 100, width: 200, height: 160 },
+        { x: introLeft - 200, y: introBottom + 100, width: 200, height: 160 },
+        { x: introRight + 60, y: introBottom + 100, width: 200, height: 160 }
     ];
     
     const stickyNotes = document.querySelectorAll('.sticky-note');
     let zoneIndex = 0;
     
     stickyNotes.forEach((note, index) => {
+        // Skip the image note - it's already positioned above hero text
+        if (note.id === 'imageNote') {
+            return;
+        }
+        
+        // Skip notes that already have positions set
+        if (note.style.left && note.style.top) {
+            return;
+        }
+        
         if (zoneIndex < safeZones.length) {
             const zone = safeZones[zoneIndex];
-            const randomX = zone.x + Math.random() * (zone.width - 220);
-            const randomY = zone.y + Math.random() * (zone.height - 160);
+            
+            // Get note dimensions for better positioning
+            let noteWidth, noteHeight;
+            
+            if (note.classList.contains('music-player-note')) {
+                noteWidth = 280;
+                noteHeight = 240;
+            } else if (note.classList.contains('image-note')) {
+                noteWidth = 280;
+                noteHeight = 200;
+            } else if (note.classList.contains('linkedin-note')) {
+                noteWidth = 200;
+                noteHeight = 100;
+            } else if (note.classList.contains('text-note')) {
+                noteWidth = 160;
+                noteHeight = 80;
+            } else {
+                noteWidth = 200;
+                noteHeight = 160;
+            }
+            
+            // Calculate random position within safe zone
+            const maxX = zone.x + zone.width - noteWidth;
+            const maxY = zone.y + zone.height - noteHeight;
+            
+            const randomX = Math.max(zone.x, Math.min(maxX, zone.x + Math.random() * (zone.width - noteWidth)));
+            const randomY = Math.max(zone.y, Math.min(maxY, zone.y + Math.random() * (zone.height - noteHeight)));
             
             note.style.left = randomX + 'px';
             note.style.top = randomY + 'px';
+            
             zoneIndex++;
         }
     });
@@ -893,8 +1149,56 @@ function makeDraggable(element) {
 // Add some random rotation to sticky notes for more natural look
 function addRandomRotations() {
     document.querySelectorAll('.sticky-note').forEach(note => {
-        const randomRotation = (Math.random() - 0.5) * 4; // -2 to +2 degrees
+        // Skip the image note - keep it straight at the top-left corner
+        if (note.id === 'imageNote') {
+            note.style.transform = 'rotate(0deg)';
+            note.dataset.originalRotation = 0;
+            return;
+        }
+        
+        // Add subtle rotation variance (-1.5 to +1.5 degrees) for natural paper look
+        const randomRotation = (Math.random() - 0.5) * 3;
         note.style.transform = `rotate(${randomRotation}deg)`;
+        
+        // Store the rotation for hover effects
+        note.dataset.originalRotation = randomRotation;
+    });
+}
+
+// Assign random paper-like background colors to sticky notes
+function assignRandomBackgroundColors() {
+    const paperColors = [
+        'linear-gradient(135deg, rgba(255, 242, 204, 0.9) 0%, rgba(255, 242, 204, 0.7) 100%)', // Light yellow
+        'linear-gradient(135deg, rgba(230, 243, 255, 0.9) 0%, rgba(230, 243, 255, 0.7) 100%)', // Light blue
+        'linear-gradient(135deg, rgba(240, 230, 255, 0.9) 0%, rgba(240, 230, 255, 0.7) 100%)', // Light purple
+        'linear-gradient(135deg, rgba(255, 240, 240, 0.9) 0%, rgba(255, 240, 240, 0.7) 100%)', // Light pink
+        'linear-gradient(135deg, rgba(240, 255, 240, 0.9) 0%, rgba(240, 255, 240, 0.7) 100%)', // Light green
+        'linear-gradient(135deg, rgba(255, 248, 225, 0.9) 0%, rgba(255, 248, 225, 0.7) 100%)', // Light orange
+        'linear-gradient(135deg, rgba(245, 245, 245, 0.9) 0%, rgba(245, 245, 245, 0.7) 100%)', // Light gray
+        'linear-gradient(135deg, rgba(255, 235, 235, 0.9) 0%, rgba(255, 235, 235, 0.7) 100%)'  // Very light red
+    ];
+    
+    document.querySelectorAll('.sticky-note').forEach(note => {
+        if (note.id === 'imageNote') {
+            // Assign a specific light blue background for the image note
+            const imageBg = 'linear-gradient(135deg, rgba(232, 244, 253, 0.9) 0%, rgba(232, 244, 253, 0.7) 100%)';
+            note.style.setProperty('--sticky-note-bg', imageBg);
+            note.style.setProperty('--sticky-note-bg-hover', 'linear-gradient(135deg, rgba(232, 244, 253, 0.95) 0%, rgba(232, 244, 253, 0.8) 100%)');
+            return;
+        }
+        
+        // Skip the music player note - keep its current background
+        if (note.id === 'playSongNote') {
+            return;
+        }
+        
+        // Assign random color to other notes
+        const randomColor = paperColors[Math.floor(Math.random() * paperColors.length)];
+        note.style.setProperty('--sticky-note-bg', randomColor);
+        
+        // Create hover version (slightly more opaque)
+        const hoverColor = randomColor.replace('0.9) 0%, rgba(', '0.95) 0%, rgba(').replace('0.7)', '0.8)');
+        note.style.setProperty('--sticky-note-bg-hover', hoverColor);
     });
 }
 
@@ -1172,11 +1476,109 @@ function clearAllDoodles() {
     }
 }
 
-// Initialize when DOM is loaded
+// Lightbox functionality for timeline image
+function initLightbox() {
+    const timelineImage = document.getElementById('timelineImage');
+    const lightboxModal = document.getElementById('lightboxModal');
+    const lightboxClose = document.getElementById('lightboxClose');
+    
+    if (timelineImage && lightboxModal && lightboxClose) {
+        // Open lightbox when timeline image is clicked
+        timelineImage.addEventListener('click', function() {
+            lightboxModal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        });
+        
+        // Close lightbox when close button is clicked
+        lightboxClose.addEventListener('click', function() {
+            lightboxModal.classList.remove('active');
+            document.body.style.overflow = ''; // Restore scrolling
+        });
+        
+        // Close lightbox when clicking outside the image
+        lightboxModal.addEventListener('click', function(e) {
+            if (e.target === lightboxModal) {
+                lightboxModal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+        
+        // Close lightbox with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && lightboxModal.classList.contains('active')) {
+                lightboxModal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+}
+
+// Enhanced page navigation to reinitialize timeline and handle special cases
+function navigateToPage(pageName) {
+    // Hide all pages
+    document.querySelectorAll('.page-content').forEach(page => {
+        page.classList.remove('active');
+    });
+    
+    // Remove active class from all nav items
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Show selected page
+    const selectedPage = document.getElementById(pageName + 'Page');
+    if (selectedPage) {
+        selectedPage.classList.add('active');
+        
+        // Initialize lightbox if navigating to naytv page
+        if (pageName === 'naytv') {
+            setTimeout(() => {
+                initLightbox();
+            }, 100);
+        }
+    }
+    
+    // Add active class to nav item
+    const navItem = document.querySelector(`[data-page="${pageName}"]`);
+    if (navItem) {
+        navItem.classList.add('active');
+    }
+    
+    // Update page title
+    updatePageTitle(pageName);
+    
+    // Show navigation menu for all pages except project detail
+    const navMenu = document.querySelector('.nav-menu');
+    if (navMenu) navMenu.style.display = 'flex';
+    
+    // Handle doodle canvas visibility
+    if (pageName === 'home') {
+        document.getElementById('doodleCanvas').style.display = 'block';
+        document.getElementById('doodlePenBtn').style.display = 'block';
+    } else {
+        document.getElementById('doodleCanvas').style.display = 'none';
+        document.getElementById('doodlePenBtn').style.display = 'none';
+    }
+}
+
+// Initialize lightbox when page loads
 document.addEventListener('DOMContentLoaded', () => {
     init();
     addRandomRotations();
+    assignRandomBackgroundColors();
     
-    // Set initial page
-    navigateToPage('home');
+    // Check if we're on a project detail page (from URL hash)
+    const hash = window.location.hash;
+    if (hash && hash.startsWith('#project-')) {
+        const projectId = hash.replace('#project-', '');
+        console.log('Detected project detail page from URL hash:', projectId);
+        navigateToProjectDetail(projectId);
+    } else {
+        navigateToPage('home');
+    }
+    
+    // Initialize lightbox if we're on the timeline page
+    if (document.getElementById('naytvPage')) {
+        initLightbox();
+    }
 }); 
