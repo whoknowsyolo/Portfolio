@@ -33,13 +33,63 @@ let doodleContext = null;
 let doodleStrokes = [];
 let clearTimeouts = [];
 
+
+
+// Custom Cursor with Speech Bubble
+function initCustomCursor() {
+    const cursorWrapper = document.querySelector('.custom-cursor-wrapper');
+    const speechBubble = document.querySelector('.speech-bubble');
+
+    console.log('cursorWrapper:', cursorWrapper);
+    console.log('speechBubble:', speechBubble);
+
+    if (!cursorWrapper || !speechBubble) return;
+
+    const adjectives = [
+        'Empathetic',
+        'Analytical',
+        'Observant',
+        'Adaptive',
+        'Collaborative',
+        'Experimental',
+        'Reflective',
+        'Impactful'
+    ];
+
+    let adjectiveIndex = 0;
+
+    // Update cursor position
+    document.addEventListener('mousemove', (e) => {
+        cursorWrapper.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+    });
+
+    // Cycle through adjectives
+    setInterval(() => {
+        speechBubble.classList.remove('fade-in');
+        speechBubble.classList.add('fade-out');
+
+        setTimeout(() => {
+            adjectiveIndex = (adjectiveIndex + 1) % adjectives.length;
+            speechBubble.textContent = adjectives[adjectiveIndex];
+            speechBubble.classList.remove('fade-out');
+            speechBubble.classList.add('fade-in');
+        }, 500); // Corresponds to the transition duration
+
+    }, 8500); // 8.5 seconds
+
+    // Initial fade-in
+    setTimeout(() => {
+        speechBubble.classList.add('fade-in');
+    }, 1000);
+}
+
 // Initialize the application
 function init() {
     setupEventListeners();
     setupDraggableElements();
     updateGreetingAndDate();
     setInterval(updateGreetingAndDate, 60000); // Update greeting every minute
-    setupCustomCursor();
+    initCustomCursor();
     setupStickyNotePositions();
     ensureProperNoteVisibility();
     setupDoodleCanvas();
@@ -57,6 +107,15 @@ function setupEventListeners() {
         item.addEventListener('click', handleNavClick);
     });
 
+    // Home link in top bar
+    const homeLink = document.querySelector('.home-link');
+    if (homeLink) {
+        homeLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateToPage('home');
+        });
+    }
+
     // Project box clicks
     document.querySelectorAll('.project-box').forEach(box => {
         box.addEventListener('click', handleProjectClick);
@@ -68,10 +127,34 @@ function setupEventListeners() {
     // Music player controls - removed since we now use Spotify embed
 }
 
+// Helper function to detect mobile devices
+function isMobileDevice() {
+    return window.innerWidth <= 768; // Using 768px as the breakpoint for mobile
+}
+
+// Map project IDs to their PDF paths
+const projectPDFs = {
+    'syncin': 'PDFs/syncin.pdf',
+    'youthhub': 'PDFs/youthhub.pdf',
+    'raahi': 'PDFs/raahiaman.pdf'
+    // Add other projects and their PDF paths here if needed
+};
+
 // Handle project box clicks
 function handleProjectClick(e) {
     const projectId = e.currentTarget.dataset.project;
-    navigateToProjectDetail(projectId);
+
+    if (isMobileDevice()) {
+        const pdfPath = projectPDFs[projectId];
+        if (pdfPath) {
+            window.open(pdfPath, '_blank'); // Open PDF in a new tab
+        } else {
+            console.warn(`No PDF found for project: ${projectId}`);
+            navigateToProjectDetail(projectId); // Fallback to existing behavior
+        }
+    } else {
+        navigateToProjectDetail(projectId); // Existing behavior for desktop
+    }
 }
 
 // Navigate to project detail page
@@ -756,50 +839,13 @@ function goBackToWorks() {
 // Handle navigation clicks
 function handleNavClick(e) {
     const targetPage = e.target.dataset.page;
-    
-    if (targetPage && targetPage !== currentPage) {
+    console.log('Navigating to:', targetPage);
+    if (targetPage) {
         navigateToPage(targetPage);
     }
 }
 
-// Navigate to a specific page
-function navigateToPage(pageName) {
-    // Hide current page
-    if (pages[currentPage]) {
-        pages[currentPage].classList.remove('active');
-    }
-    
-    // Show target page
-    if (pages[pageName]) {
-        pages[pageName].classList.add('active');
-    }
-    
-    // Update navigation state
-    navItems.forEach(item => {
-        item.classList.remove('active');
-        if (item.dataset.page === pageName) {
-            item.classList.add('active');
-        }
-    });
-    
-    currentPage = pageName;
-    
-    // Update page title
-    updatePageTitle(pageName);
-    
-    // Show navigation menu for all pages except project detail
-    const navMenu = document.querySelector('.nav-menu');
-    if (navMenu) navMenu.style.display = 'flex';
-    
-    // Handle doodle canvas visibility
-    if (pageName === 'home') {
-        document.getElementById('doodleCanvas').style.display = 'block';
-        document.getElementById('doodlePenBtn').style.display = 'block';
-    } else {
-        document.getElementById('doodleCanvas').style.display = 'none';
-        document.getElementById('doodlePenBtn').style.display = 'none';
-    }
-}
+
 
 // Update page title
 function updatePageTitle(pageName) {
@@ -830,25 +876,34 @@ function toggleSide(targetSide) {
 
 // Ensure proper sticky note visibility
 function ensureProperNoteVisibility() {
+    const allStickyNotes = document.querySelectorAll('.sticky-note');
     const workNotes = document.querySelectorAll('.work-note');
     const personalNotes = document.querySelectorAll('.personal-note');
-    
-    if (isPersonalMode) {
-        // Hide work notes, show personal notes
-        workNotes.forEach(note => {
+
+    if (isMobileDevice()) {
+        // Hide all sticky notes on mobile
+        allStickyNotes.forEach(note => {
             note.style.display = 'none';
-        });
-        personalNotes.forEach(note => {
-            note.style.display = 'block';
         });
     } else {
-        // Show work notes, hide personal notes
-        workNotes.forEach(note => {
-            note.style.display = 'block';
-        });
-        personalNotes.forEach(note => {
-            note.style.display = 'none';
-        });
+        // Existing desktop logic
+        if (isPersonalMode) {
+            // Hide work notes, show personal notes
+            workNotes.forEach(note => {
+                note.style.display = 'none';
+            });
+            personalNotes.forEach(note => {
+                note.style.display = 'block';
+            });
+        } else {
+            // Show work notes, hide personal notes
+            workNotes.forEach(note => {
+                note.style.display = 'block';
+            });
+            personalNotes.forEach(note => {
+                note.style.display = 'none';
+            });
+        }
     }
 }
 
@@ -883,120 +938,37 @@ function updateGreetingAndDate() {
     }
 }
 
-// Custom cursor system
-function setupCustomCursor() {
-    const cursor = document.createElement('div');
-    cursor.className = 'custom-cursor';
-    cursor.innerHTML = `
-        <div class="cursor-pointer"></div>
-        <div class="cursor-label">Builder</div>
-    `;
-    document.body.appendChild(cursor);
-    
-    const cursorLabel = cursor.querySelector('.cursor-label');
-    const quirks = ['Builder', 'Thinker', 'Dreamer', 'Creator', 'Innovator', 'Explorer', 'Visionary', 'Catalyst', 'Strategist', 'Tinkerer'];
-    
-    // FigJam color palette
-    const figjamColors = [
-        '#00C781', // Green (initial)
-        '#72CCFF', // Sky blue
-        '#FF6699', // Hot pink
-        '#C17DFF', // Purple
-        '#FFEB38', // Yellow
-        '#FFAA4C'  // Orange
-    ];
-    
-    let currentQuirkIndex = 0;
-    let currentColorIndex = 0;
-    let lastUpdateTime = 0;
-    const updateInterval = 60000; // 60 seconds between updates
-    
-    // Update quirk and color with smooth transitions
-    function updateQuirkAndColor() {
-        const now = Date.now();
-        if (now - lastUpdateTime >= updateInterval) {
-            currentQuirkIndex = (currentQuirkIndex + 1) % quirks.length;
-            
-            // Change color randomly (but not to the same color)
-            let newColorIndex;
-            do {
-                newColorIndex = Math.floor(Math.random() * figjamColors.length);
-            } while (newColorIndex === currentColorIndex && figjamColors.length > 1);
-            currentColorIndex = newColorIndex;
-            
-            // Fade out
-            cursorLabel.classList.add('fade-out');
-            cursorLabel.classList.remove('fade-in');
-            
-            setTimeout(() => {
-                cursorLabel.textContent = quirks[currentQuirkIndex];
-                cursorLabel.style.backgroundColor = figjamColors[currentColorIndex];
-                cursorLabel.classList.remove('fade-out');
-                cursorLabel.classList.add('fade-in');
-            }, 150);
-            
-            lastUpdateTime = now;
-        }
-    }
-    
-    // Update quirk and color every 60 seconds
-    setInterval(updateQuirkAndColor, updateInterval);
-    
-    // Real-time cursor following with zero lag
-    document.addEventListener('mousemove', (e) => {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-        
-        // Hide cursor when over PDF or embed elements
-        if (e.target.closest('embed') || e.target.closest('.syncin-detail-pdf')) {
-            cursor.style.opacity = '0';
-        } else if (!e.target.closest('.sticky-note') && !e.target.closest('.nav-item') && !e.target.closest('.side-toggle') && !e.target.closest('.project-box')) {
-            cursor.style.opacity = '1';
-        }
-    });
-    
-    // Hide cursor on interactive elements
-    document.addEventListener('mouseover', (e) => {
-        if (e.target.closest('.sticky-note') || e.target.closest('.nav-item') || e.target.closest('.side-toggle') || e.target.closest('.project-box') || e.target.closest('embed') || e.target.closest('.syncin-detail-pdf')) {
-            cursor.style.opacity = '0';
-        } else {
-            cursor.style.opacity = '1';
-        }
-    });
-    
-    // Initialize first quirk
-    cursorLabel.classList.add('fade-in');
-}
+
 
 // Setup sticky note positions to avoid overlap with intro text
 function setupStickyNotePositions() {
     const introSection = document.querySelector('.intro-section');
     if (!introSection) return;
-    
+
     const introRect = introSection.getBoundingClientRect();
     const canvasRect = canvas.getBoundingClientRect();
-    
+
     // Calculate intro section boundaries with padding
     const introLeft = introRect.left - canvasRect.left;
     const introRight = introRect.right - canvasRect.left;
     const introTop = introRect.top - canvasRect.top;
     const introBottom = introRect.bottom - canvasRect.top;
-    
-    // Place image note directly above the hero text for balance
+
+    // Place image note directly above the hero text for balance (desktop only)
     const imageNote = document.getElementById('imageNote');
     if (imageNote) {
         const imageNoteWidth = 280; // Width of image note
         const imageNoteHeight = 200; // Height of image note
-        
+
         // Center the image note above the intro section
         const imageNoteX = introLeft + (introRight - introLeft) / 2 - imageNoteWidth / 2;
         const imageNoteY = introTop - imageNoteHeight - 30; // 30px gap above intro
-        
+
         imageNote.style.left = imageNoteX + 'px';
         imageNote.style.top = imageNoteY + 'px';
         imageNote.style.transform = 'rotate(0deg)'; // Keep it straight
     }
-    
+
     // Define safe zones that frame the intro section without overlap
     // Exclude the area where the image note is placed
     const safeZones = [
@@ -1022,27 +994,27 @@ function setupStickyNotePositions() {
         { x: introLeft - 200, y: introBottom + 100, width: 200, height: 160 },
         { x: introRight + 60, y: introBottom + 100, width: 200, height: 160 }
     ];
-    
+
     const stickyNotes = document.querySelectorAll('.sticky-note');
     let zoneIndex = 0;
-    
+
     stickyNotes.forEach((note, index) => {
         // Skip the image note - it's already positioned above hero text
         if (note.id === 'imageNote') {
             return;
         }
-        
+
         // Skip notes that already have positions set
         if (note.style.left && note.style.top) {
             return;
         }
-        
+
         if (zoneIndex < safeZones.length) {
             const zone = safeZones[zoneIndex];
-            
+
             // Get note dimensions for better positioning
             let noteWidth, noteHeight;
-            
+
             if (note.classList.contains('music-player-note')) {
                 noteWidth = 280;
                 noteHeight = 240;
@@ -1059,17 +1031,17 @@ function setupStickyNotePositions() {
                 noteWidth = 200;
                 noteHeight = 160;
             }
-            
+
             // Calculate random position within safe zone
             const maxX = zone.x + zone.width - noteWidth;
             const maxY = zone.y + zone.height - noteHeight;
-            
+
             const randomX = Math.max(zone.x, Math.min(maxX, zone.x + Math.random() * (zone.width - noteWidth)));
             const randomY = Math.max(zone.y, Math.min(maxY, zone.y + Math.random() * (zone.height - noteHeight)));
-            
+
             note.style.left = randomX + 'px';
             note.style.top = randomY + 'px';
-            
+
             zoneIndex++;
         }
     });
@@ -1155,11 +1127,11 @@ function addRandomRotations() {
             note.dataset.originalRotation = 0;
             return;
         }
-        
+
         // Add subtle rotation variance (-1.5 to +1.5 degrees) for natural paper look
         const randomRotation = (Math.random() - 0.5) * 3;
         note.style.transform = `rotate(${randomRotation}deg)`;
-        
+
         // Store the rotation for hover effects
         note.dataset.originalRotation = randomRotation;
     });
@@ -1177,7 +1149,7 @@ function assignRandomBackgroundColors() {
         'linear-gradient(135deg, rgba(245, 245, 245, 0.9) 0%, rgba(245, 245, 245, 0.7) 100%)', // Light gray
         'linear-gradient(135deg, rgba(255, 235, 235, 0.9) 0%, rgba(255, 235, 235, 0.7) 100%)'  // Very light red
     ];
-    
+
     document.querySelectorAll('.sticky-note').forEach(note => {
         if (note.id === 'imageNote') {
             // Assign a specific light blue background for the image note
@@ -1186,16 +1158,16 @@ function assignRandomBackgroundColors() {
             note.style.setProperty('--sticky-note-bg-hover', 'linear-gradient(135deg, rgba(232, 244, 253, 0.95) 0%, rgba(232, 244, 253, 0.8) 100%)');
             return;
         }
-        
+
         // Skip the music player note - keep its current background
         if (note.id === 'playSongNote') {
             return;
         }
-        
+
         // Assign random color to other notes
         const randomColor = paperColors[Math.floor(Math.random() * paperColors.length)];
         note.style.setProperty('--sticky-note-bg', randomColor);
-        
+
         // Create hover version (slightly more opaque)
         const hoverColor = randomColor.replace('0.9) 0%, rgba(', '0.95) 0%, rgba(').replace('0.7)', '0.8)');
         note.style.setProperty('--sticky-note-bg-hover', hoverColor);
@@ -1544,6 +1516,9 @@ function navigateToPage(pageName) {
         navItem.classList.add('active');
     }
     
+    // Update current page state
+    currentPage = pageName;
+
     // Update page title
     updatePageTitle(pageName);
     
@@ -1581,4 +1556,52 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('naytvPage')) {
         initLightbox();
     }
-}); 
+
+    // Initialize custom cursor
+    initCustomCursor();
+});
+
+// Custom Cursor with Speech Bubble
+function initCustomCursor() {
+    const cursorWrapper = document.querySelector('.custom-cursor-wrapper');
+    const speechBubble = document.querySelector('.speech-bubble');
+
+    if (!cursorWrapper || !speechBubble) return;
+
+    const adjectives = [
+        'Empathetic',
+        'Analytical',
+        'Observant',
+        'Adaptive',
+        'Collaborative',
+        'Experimental',
+        'Reflective',
+        'Impactful'
+    ];
+
+    let adjectiveIndex = 0;
+
+    // Update cursor position
+    document.addEventListener('mousemove', (e) => {
+        cursorWrapper.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+    });
+
+    // Cycle through adjectives
+    setInterval(() => {
+        speechBubble.classList.remove('fade-in');
+        speechBubble.classList.add('fade-out');
+
+        setTimeout(() => {
+            adjectiveIndex = (adjectiveIndex + 1) % adjectives.length;
+            speechBubble.textContent = adjectives[adjectiveIndex];
+            speechBubble.classList.remove('fade-out');
+            speechBubble.classList.add('fade-in');
+        }, 500); // Corresponds to the transition duration
+
+    }, 8500); // 8.5 seconds
+
+    // Initial fade-in
+    setTimeout(() => {
+        speechBubble.classList.add('fade-in');
+    }, 1000);
+} 
